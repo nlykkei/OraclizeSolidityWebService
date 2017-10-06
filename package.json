@@ -1,0 +1,18 @@
+{
+  "name": "oraclize-solidity",
+  "version": "1.0.0",
+  "description": "Service for Ethereum contracts using Oraclize",
+  "engines": {
+    "node": "6.11.1"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node server.js"
+  },
+  "keywords": [
+    "node",
+    "heroku"
+  ],
+  "license": "MIT"
+}
