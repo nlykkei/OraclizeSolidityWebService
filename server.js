@@ -12,11 +12,13 @@ http.createServer(function (req, res) {
 
     // split URL into integer array
     var numbers = req.url.split("/");
-    console.log(numbers);
+    //console.log(numbers);
     numbers.shift(); // remove '' 
     numbers = numbers.map(function (n) {
         return parseInt(n);
     });
+
+    console.log(numbers);
 
     // check for malformed input
     var malformed = numbers.some(function (n) {
@@ -33,7 +35,7 @@ http.createServer(function (req, res) {
 
         resp = numbers.reduce(function (acc, curr) {
             return acc + curr + " ";
-        }, "");
+        }, "").trim();
     }
 
     //console.log(numbers);
