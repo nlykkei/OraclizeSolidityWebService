@@ -38,7 +38,7 @@ http.createServer(function (req, res) {
         }, "").trim();
     }
 
-    //console.log(numbers);
+    console.log(numbers);
 
     // return array as space-separated string
     res.writeHead(200, { 'Content-Type': 'text/plain' });
