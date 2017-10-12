@@ -4,7 +4,7 @@ var fs = require('fs');
 function renderHTML(path, resp) {
     fs.readFile(path, null, function (err, data) {
         if (err) {
-            resp.writeHead(404);
+            resp.writeHead(404, { 'Content-Type': 'text/plain' });
             resp.write('File not found!');
         } else {
             resp.writeHead(200, { 'Content-Type': 'text/html' });
@@ -14,50 +14,47 @@ function renderHTML(path, resp) {
     });
 }
 
-function sortArray(numbers) {
+function sortArray(args, resp) {
+    resp.writeHead(200, { 'Content-Type': 'text/plain' });
+
+    var numbers = args.split('/');
+
     // check for malformed input
     var malformed = numbers.some(function (n) {
         return isNaN(n);
     });
 
     if (malformed) {
-        res.write("Error");
+        resp.write("Error");
     } else {
+        
         // sort array of integers
         numbers.sort(function (a, b) {
             return a - b;
         });
 
-        res.write(numbers.reduce(function (acc, curr) {
+        resp.write(numbers.reduce(function (acc, curr) {
             return acc + curr + " ";
         }, "").trim());
     }
 
     // return array as space-separated string
-    res.end("");
+    resp.end("");
 }
 
 
 module.exports = {
     handleRequest: function (req, resp) {
         var path = url.parse(req.url).path;
-
-        console.log(path);
-
-        var components = path.split('/');
-        console.log(components);
-        components.shift(); // get rid of ''
-        var service = components.shift();
-
+        var index = path.indexOf('/', 1);
+        var service = path.substring(1, index);
+        var args = path.substring(index + 1);
         switch (service) {
             case 'sort':
-                var numbers = components.map(function (n) {
-                    return parseInt(n);
-                });
-                sortArray(numbers, resp);
+                sortArray(args, resp);
                 break;
             default:
-                renderHTML('./index.html');
+                renderHTML('./index.html', resp);
                 break;
         }
     }
