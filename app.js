@@ -7,12 +7,11 @@ function renderHTML(path, resp) {
         if (err) {
             resp.writeHead(404, { 'Content-Type': 'text/plain' });
             resp.write('File not found!');
-            resp.end("");
         } else {
             resp.writeHead(200, { 'Content-Type': 'text/html' });
             resp.write(data);
-            resp.end("");
         }
+        resp.end();
     });
 }
 
@@ -30,7 +29,7 @@ function sortArray(args, resp) {
     }
 
     // return array as space-separated string
-    resp.end("");
+    resp.end();
 }
 
 function sortArrayBin(args, resp) {
@@ -41,12 +40,15 @@ function sortArrayBin(args, resp) {
     if (checkMalformedAndSort(numbers)) {
         resp.write("Error");
     } else {
+        numbers = numbers.map(function(n) {
+            return utils.intTo16BigEndianString(n);
+        })
         resp.write(numbers.reduce(function (acc, curr) {
-            return acc + utils.intTo16BigEndianString(curr);
-        }, "").trim());
+            return acc + curr;
+        }));
     }
 
-    resp.end("");
+    resp.end();
 }
 
 function checkMalformedAndSort(numbers) {
