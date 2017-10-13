@@ -42,7 +42,7 @@ function sortArrayBin(args, resp) {
         resp.write("Error");
     } else {
         resp.write(numbers.reduce(function (acc, curr) {
-            return acc + utils.intTo32BigEndianString(curr);
+            return acc + utils.intTo16BigEndianString(curr);
         }, "").trim());
     }
 

@@ -24,7 +24,17 @@ function intTo32BigEndianString(n) {
     return result;
 }
 
+function intTo16BigEndianString(n) {
+    var result = "";
+
+    result += String.fromCharCode((n >> 8) & 0xFF);
+    result += String.fromCharCode((n >> 0) & 0xFF);
+    
+    return result;
+}
+
 module.exports = {
     intTo256BigEndianString: intTo256BigEndianString,
-    intTo32BigEndianString: intTo32BigEndianString
+    intTo32BigEndianString: intTo32BigEndianString,
+    intTo16BigEndianString: intTo16BigEndianString
 }
