@@ -11,6 +11,7 @@ function renderHTML(path, resp) {
             resp.writeHead(200, { 'Content-Type': 'text/html' });
             resp.write(data);
         }
+
         resp.end();
     });
 }
@@ -18,9 +19,10 @@ function renderHTML(path, resp) {
 function sortArray(args, resp) {
     resp.writeHead(200, { 'Content-Type': 'text/plain' });
 
-    var numbers = args.split('/');
+    var numbers = args.split('/').map(n => parseInt(n));
+    numbers.sort((x, y) => x - y);
 
-    if (checkMalformedAndSort(numbers)) {
+    if (numbers.some(n => isNaN(n))) {
         resp.write("Error");
     } else {
         resp.write(numbers.reduce(function (acc, curr) {
@@ -28,41 +30,27 @@ function sortArray(args, resp) {
         }, "").trim());
     }
 
-    // return array as space-separated string
     resp.end();
 }
 
 function sortArrayBin(args, resp) {
-    resp.writeHead(200, { 'Content-Type': 'application/octet-stream' });
+    resp.writeHead(200, { 'Content-Type': 'text/plain' });
 
-    var numbers = args.split('/');
+    var numbers = args.split('/').map(n => parseInt(n));
+    numbers.sort((x, y) => x - y);
 
-    if (checkMalformedAndSort(numbers)) {
-        resp.write("Error");
+    if (numbers.some(n => isNaN(n))) {
+        resp.write("Error: Invalid input");
     } else {
         numbers = numbers.map(function(n) {
             return utils.intTo16BigEndianString(n);
         })
         resp.write(numbers.reduce(function (acc, curr) {
-            return acc + curr;
+            return acc + utils.intTo16BigEndianString(curr);
         }));
     }
 
     resp.end();
-}
-
-function checkMalformedAndSort(numbers) {
-    var malformed = numbers.some(function (n) {
-        return isNaN(n);
-    });
-
-    if (!malformed) {
-        numbers.sort(function (a, b) {
-            return a - b;
-        });
-    }
-
-    return malformed;
 }
 
 module.exports = {
