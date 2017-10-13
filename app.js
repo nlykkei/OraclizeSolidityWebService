@@ -33,7 +33,7 @@ function sortArray(args, resp) {
 }
 
 function sortArrayBin(args, resp) {
-    resp.writeHead(200, { 'Content-Type': 'text/plain' });
+    resp.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     var numbers = args.split('/');
 
