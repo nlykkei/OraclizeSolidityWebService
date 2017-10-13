@@ -46,7 +46,7 @@ function sortArrayBin(args, resp) {
             return utils.intTo16BigEndianString(n);
         })
         resp.write(numbers.reduce(function (acc, curr) {
-            return acc + utils.intTo16BigEndianString(curr);
+            return acc + curr;
         }));
     }
 
