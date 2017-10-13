@@ -40,14 +40,14 @@ function sortArrayBin(args, resp) {
     numbers.sort((x, y) => x - y);
 
     if (numbers.some(n => isNaN(n))) {
-        resp.write("Error: Invalid input");
+        resp.write("Error: Invalid input", "binary");
     } else {
         numbers = numbers.map(function(n) {
             return utils.intTo16BigEndianString(n);
         })
         resp.write(numbers.reduce(function (acc, curr) {
             return acc + curr;
-        }));
+        }), "binary");
     }
 
     resp.end();
