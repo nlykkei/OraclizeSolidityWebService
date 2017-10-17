@@ -112,7 +112,7 @@ function minBin(args, resp) {
         for (var i = 1; i < args.length; ++i) {
             if (args[i] < args[minIndex]) minIndex = i;
         }
-        resp.write(utils.intTo32BigEndianString(((minIndex & 0xFFFF) << 16) + args[i] & 0xFFFF), "binary");
+        resp.write(utils.intTo32BigEndianString(((minIndex & 0xFFFF) << 16) + (args[i] & 0xFFFF)), "binary");
     }
     
     resp.end();
@@ -130,7 +130,7 @@ function threeSumBin(args, resp) {
         S = args.sort((x, y) => x.val - y.val);
         result = threeSum(S);
         if (result.length > 0) {
-            resp.write(utils.intTo32BigEndianString(((result[0].a.index << 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
+            resp.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
                 + utils.intTo16BigEndianString(result[0].c.index & 0xFFFF), "binary");
         }
     }
