@@ -112,7 +112,7 @@ function minBin(args, resp) {
         for (var i = 1; i < args.length; ++i) {
             if (args[i] < args[minIndex]) minIndex = i;
         }
-        resp.write(utils.intTo32BigEndianString(((minIndex & 0xFFFF) << 16) + (args[i] & 0xFFFF)), "binary");
+        resp.write(utils.intTo32BigEndianString(((minIndex & 0xFFFF) << 16) + (args[minIndex] & 0xFFFF)), "binary");
     }
     
     resp.end();
