@@ -185,7 +185,7 @@ module.exports = {
                 sqrtPlain(args, resp);
                 break;
             case 'sqrtb':
-                sqrtPlain(args, resp);
+                sqrtBin(args, resp);
                 break;
             case 'min':
                 minBin(args, resp);
