@@ -1,5 +1,6 @@
 var url = require('url');
 var fs = require('fs');
+var querystring = require('querystring');
 var path = require('path');
 var utils = require('./utils.js');
 
@@ -114,7 +115,7 @@ function minBin(args, resp) {
         }
         resp.write(utils.intTo32BigEndianString(((minIndex & 0xFFFF) << 16) + (args[minIndex] & 0xFFFF)), "binary");
     }
-    
+
     resp.end();
 }
 
@@ -168,34 +169,53 @@ function threeSum(S) {
 }
 
 module.exports = {
-    handleRequest: function (req, resp) {
-        var path = url.parse(req.url).path;
-        var index = path.indexOf('/', 1);
-        var service = path.substring(1, index);
-        var args = path.substring(index + 1);
+    handleRequest: function (req, res) {
 
-        switch (service) {
-            case 'sort':
-                sortArrayPlain(args, resp);
-                break;
-            case 'sortb':
-                sortArrayBin(args, resp);
-                break;
-            case 'sqrt':
-                sqrtPlain(args, resp);
-                break;
-            case 'sqrtb':
-                sqrtBin(args, resp);
-                break;
-            case 'min':
-                minBin(args, resp);
-                break;
-            case '3sum':
-                threeSumBin(args, resp);
-                break;
-            default:
-                renderHTML(path, resp);
-                break;
+        if (req.method == 'POST') {
+
+            var body = '';
+
+            req.on('data', function (data) {
+                body += data;
+            });
+
+            req.on('end', function () {
+                var post = querystring.parse(body);
+                console.log(post);
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end('HelloWorld!\n');
+            });
+        }
+        else if (req.method == 'GET') {
+
+            var path = url.parse(req.url).path;
+            var index = path.indexOf('/', 1);
+            var service = path.substring(1, index);
+            var args = path.substring(index + 1);
+
+            switch (service) {
+                case 'sort':
+                    sortArrayPlain(args, resp);
+                    break;
+                case 'sortb':
+                    sortArrayBin(args, resp);
+                    break;
+                case 'sqrt':
+                    sqrtPlain(args, resp);
+                    break;
+                case 'sqrtb':
+                    sqrtBin(args, resp);
+                    break;
+                case 'min':
+                    minBin(args, resp);
+                    break;
+                case '3sum':
+                    threeSumBin(args, resp);
+                    break;
+                default:
+                    renderHTML(path, resp);
+                    break;
+            }
         }
     }
 }
