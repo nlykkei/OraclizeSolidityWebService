@@ -172,10 +172,11 @@ module.exports = {
     handleRequest: function (req, res) {
 
         if (req.method == 'POST') {
-            res.writeHead(200);
-            console.log(req.method);
-            console.log(req.headers);
-            console.log(req.url);
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+
+            //console.log(req.method);
+            //console.log(req.headers);
+            //console.log(req.url);
 
             var data = '';
             req.on('data', function (chunk) {
@@ -183,7 +184,7 @@ module.exports = {
             });
             req.on('end', function () {
                 console.log(querystring.parse(data));
-                res.write('hi');
+                res.write('Unsupported request method: POST');
                 res.end();
             });
         }
