@@ -172,18 +172,19 @@ module.exports = {
     handleRequest: function (req, res) {
 
         if (req.method == 'POST') {
+            res.writeHead(200);
+            console.log(req.method);
+            console.log(req.headers);
+            console.log(req.url);
 
-            var body = '';
-
-            req.on('data', function (data) {
-                body += data;
+            var data = '';
+            req.on('data', function (chunk) {
+                data += chunk.toString();
             });
-
             req.on('end', function () {
-                var post = querystring.parse(body);
-                console.log(post);
-                res.writeHead(200, { 'Content-Type': 'text/plain' });
-                res.end('HelloWorld!\n');
+                console.log(querystring.parse(data));
+                res.write('hi');
+                res.end();
             });
         }
         else if (req.method == 'GET') {
