@@ -212,7 +212,7 @@ function servePostRequest(req, res) {
     });
 
     req.on('end', function () {
-        //console.log(buffer.toString('hex'));
+        console.log(buffer.toString('hex'));
         console.log(buffer.length);
         //console.log(querystring.parse(data));
 
