@@ -168,57 +168,82 @@ function threeSum(S) {
     return result;
 }
 
+function serveRequest(req, res) {
+    var path = url.parse(req.url).path;
+    var index = path.indexOf('/', 1);
+    var service = path.substring(1, index);
+    var args = path.substring(index + 1);
+
+    switch (service) {
+        case 'sort':
+            sortArrayPlain(args, res);
+            break;
+        case 'sortb':
+            sortArrayBin(args, res);
+            break;
+        case 'sqrt':
+            sqrtPlain(args, res);
+            break;
+        case 'sqrtb':
+            sqrtBin(args, res);
+            break;
+        case 'min':
+            minBin(args, res);
+            break;
+        case '3sum':
+            threeSumBin(args, res);
+            break;
+        default:
+            renderHTML(path, res);
+            break;
+    }
+}
+
+
 module.exports = {
     handleRequest: function (req, res) {
 
+        //console.log(req.method);
+        //console.log(req.headers);
+        //console.log(req.url);
+
         if (req.method == 'POST') {
-            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
-            //console.log(req.method);
-            //console.log(req.headers);
-            //console.log(req.url);
+            var buffer = Buffer.alloc(0);
+            //var data = '';
 
-            var data = '';
             req.on('data', function (chunk) {
-                data += chunk.toString();
+                buffer = Buffer.concat([buffer, Buffer.from(chunk, 'binary')]);
+                //data += chunk.toString('binary');
             });
+
             req.on('end', function () {
-                console.log(data);
+                console.log(buffer.toString('hex'));
                 //console.log(querystring.parse(data));
-                res.write('HelloWorld');
+
+                var nums = [];
+
+                for (var i = 0; i < buffer.length / 2; ++i) {
+                    var n = 0;
+                    n += buffer[2 * i] << 8;
+                    n += buffer[2 * i + 1] << 0;
+                    nums.push(n);
+                }
+
+                nums.forEach(n => console.log(n));
+
+                nums.sort((x, y) => x - y);
+                nums = nums.map(n => utils.intTo16BigEndianString(n));
+                res.write(nums.reduce(function (acc, curr) {
+                    return acc + curr;
+                }), "binary");
+
                 res.end();
             });
         }
         else if (req.method == 'GET') {
-
-            var path = url.parse(req.url).path;
-            var index = path.indexOf('/', 1);
-            var service = path.substring(1, index);
-            var args = path.substring(index + 1);
-
-            switch (service) {
-                case 'sort':
-                    sortArrayPlain(args, res);
-                    break;
-                case 'sortb':
-                    sortArrayBin(args, res);
-                    break;
-                case 'sqrt':
-                    sqrtPlain(args, res);
-                    break;
-                case 'sqrtb':
-                    sqrtBin(args, res);
-                    break;
-                case 'min':
-                    minBin(args, res);
-                    break;
-                case '3sum':
-                    threeSumBin(args, res);
-                    break;
-                default:
-                    renderHTML(path, res);
-                    break;
-            }
+            serveRequest(req, res);
         }
     }
 }
