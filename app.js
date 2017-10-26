@@ -4,7 +4,7 @@ var querystring = require('querystring');
 var path = require('path');
 var utils = require('./utils.js');
 
-function renderHTML(filePath, resp) {
+function renderHTML(filePath, res) {
 
     if (filePath == '/') {
         filePath = '/index.html';
@@ -25,118 +25,118 @@ function renderHTML(filePath, resp) {
 
     fs.readFile(filePath, null, function (err, data) {
         if (err) {
-            resp.writeHead(404, { 'Content-Type': 'text/plain' });
-            resp.write('File not found!');
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.write('File not found!');
         } else {
-            resp.writeHead(200, { 'Content-Type': contentType });
-            resp.write(data);
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.write(data);
         }
 
-        resp.end();
+        res.end();
     });
 }
 
-function sortArrayPlain(args, resp) {
-    resp.writeHead(200, { 'Content-Type': 'text/plain' });
+function sortArrayPlain(args, res) {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
 
     args = args.split('/').map(arg => parseInt(arg));
 
     if (args.some(arg => isNaN(arg))) {
-        resp.write("Error: Invalid input");
+        res.write("Error: Invalid input");
     } else {
         args.sort((x, y) => x - y);
-        resp.write(args.reduce(function (acc, curr) {
+        res.write(args.reduce(function (acc, curr) {
             return acc + curr + " ";
         }, "").trim());
     }
 
-    resp.end();
+    res.end();
 }
 
-function sortArrayBin(args, resp) {
-    resp.writeHead(200, { 'Content-Type': 'application/octet-stream' });
+function sortArrayBin(args, res) {
+    res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     args = args.split('/').map(arg => parseInt(arg));
 
     if (args.some(arg => isNaN(arg))) {
-        resp.write("Error: Invalid input", "binary");
+        res.write("Error: Invalid input", "binary");
     } else {
         args.sort((x, y) => x - y);
         args = args.map(n => utils.intTo16BigEndianString(n));
-        resp.write(args.reduce(function (acc, curr) {
+        res.write(args.reduce(function (acc, curr) {
             return acc + curr;
         }), "binary");
     }
 
-    resp.end();
+    res.end();
 }
 
-function sqrtPlain(arg, resp) {
-    resp.writeHead(200, { 'Content-Type': 'text/plain' });
+function sqrtPlain(arg, res) {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
 
     arg = parseInt(arg);
 
     if (isNaN(arg)) {
-        resp.write("Error: Invalid input", "binary");
+        res.write("Error: Invalid input", "binary");
     } else {
         var isqrt = Math.floor(Math.sqrt(arg));
-        resp.write(isqrt.toString());
+        res.write(isqrt.toString());
     }
 
-    resp.end();
+    res.end();
 }
 
-function sqrtBin(arg, resp) {
-    resp.writeHead(200, { 'Content-Type': 'application/octet-stream' });
+function sqrtBin(arg, res) {
+    res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     arg = parseInt(arg);
 
     if (isNaN(arg)) {
-        resp.write("Error: Invalid input", "binary");
+        res.write("Error: Invalid input", "binary");
     } else {
         var isqrt = Math.floor(Math.sqrt(arg));
-        resp.write(utils.intTo16BigEndianString(isqrt), "binary");
+        res.write(utils.intTo16BigEndianString(isqrt), "binary");
     }
 
-    resp.end();
+    res.end();
 }
 
-function minBin(args, resp) {
-    resp.writeHead(200, { 'Content-Type': 'application/octet-stream' });
+function minBin(args, res) {
+    res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     args = args.split('/').map(arg => parseInt(arg));
 
     if (args.some(arg => isNaN(arg))) {
-        resp.write("Error: Invalid input", "binary");
+        res.write("Error: Invalid input", "binary");
     } else {
         minIndex = 0;
         for (var i = 1; i < args.length; ++i) {
             if (args[i] < args[minIndex]) minIndex = i;
         }
-        resp.write(utils.intTo32BigEndianString(((minIndex & 0xFFFF) << 16) + (args[minIndex] & 0xFFFF)), "binary");
+        res.write(utils.intTo32BigEndianString(((minIndex & 0xFFFF) << 16) + (args[minIndex] & 0xFFFF)), "binary");
     }
 
-    resp.end();
+    res.end();
 }
 
-function threeSumBin(args, resp) {
-    resp.writeHead(200, { 'Content-Type': 'application/octet-stream' });
+function threeSumBin(args, res) {
+    res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     args = args.split('/').map(arg => parseInt(arg));
 
     if (args.some(arg => isNaN(arg))) {
-        resp.write("Error: Invalid input", "binary");
+        res.write("Error: Invalid input", "binary");
     } else {
         args = args.map((n, index) => { return { val: n, index: index } });
         S = args.sort((x, y) => x.val - y.val);
         result = threeSum(S);
         if (result.length > 0) {
-            resp.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
+            res.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
                 + utils.intTo16BigEndianString(result[0].c.index & 0xFFFF), "binary");
         }
     }
 
-    resp.end();
+    res.end();
 }
 
 function threeSum(S) {
@@ -198,25 +198,25 @@ module.exports = {
 
             switch (service) {
                 case 'sort':
-                    sortArrayPlain(args, resp);
+                    sortArrayPlain(args, res);
                     break;
                 case 'sortb':
-                    sortArrayBin(args, resp);
+                    sortArrayBin(args, res);
                     break;
                 case 'sqrt':
-                    sqrtPlain(args, resp);
+                    sqrtPlain(args, res);
                     break;
                 case 'sqrtb':
-                    sqrtBin(args, resp);
+                    sqrtBin(args, res);
                     break;
                 case 'min':
-                    minBin(args, resp);
+                    minBin(args, res);
                     break;
                 case '3sum':
-                    threeSumBin(args, resp);
+                    threeSumBin(args, res);
                     break;
                 default:
-                    renderHTML(path, resp);
+                    renderHTML(path, res);
                     break;
             }
         }
