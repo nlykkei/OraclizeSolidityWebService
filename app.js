@@ -212,17 +212,30 @@ function servePostRequest(req, res) {
     });
 
     req.on('end', function () {
-        console.log(buffer.toString('hex'));
+        //console.log(buffer.toString('hex'));
         console.log(buffer.length);
         //console.log(querystring.parse(data));
 
         var nums = [];
 
-        for (var i = 0; i < buffer.length / 2; ++i) {
-            var n = 0;
-            n += buffer[2 * i] << 8;
-            n += buffer[2 * i + 1] << 0;
-            nums.push(n);
+        for (var i = 0; i < buffer.length; ++i) {
+            switch (buffer[i]) { // code
+                case 1: // =0
+                    nums.push(0);
+                    break;
+                case 2: // low-order byte
+                    nums.push(buffer[++i]);
+                    break;
+                case 4: // high-order byte
+                    nums.push(buffer[++i] << 8);
+                    break;
+                case 8: // both
+                    var n = 0;
+                    n += (buffer[++i] << 8);
+                    n += (buffer[++i] << 0);
+                    nums.push(n);
+                    break;
+            }
         }
 
         nums.forEach(n => console.log(n));
