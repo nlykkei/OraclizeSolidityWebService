@@ -183,8 +183,9 @@ module.exports = {
                 data += chunk.toString();
             });
             req.on('end', function () {
-                console.log(querystring.parse(data));
-                res.write('Unsupported request method: POST');
+                console.log(data);
+                //console.log(querystring.parse(data));
+                res.write('HelloWorld');
                 res.end();
             });
         }
