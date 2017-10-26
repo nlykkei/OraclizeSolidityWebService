@@ -168,7 +168,7 @@ function threeSum(S) {
     return result;
 }
 
-function serveRequest(req, res) {
+function serveGetRequest(req, res) {
     var path = url.parse(req.url).path;
     var index = path.indexOf('/', 1);
     var service = path.substring(1, index);
@@ -199,6 +199,43 @@ function serveRequest(req, res) {
     }
 }
 
+function servePostRequest(req, res) {
+
+    res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
+
+    var buffer = Buffer.alloc(0);
+    //var data = '';
+
+    req.on('data', function (chunk) {
+        buffer = Buffer.concat([buffer, Buffer.from(chunk, 'binary')]);
+        //data += chunk.toString('binary');
+    });
+
+    req.on('end', function () {
+        console.log(buffer.toString('hex'));
+        //console.log(querystring.parse(data));
+
+        var nums = [];
+
+        for (var i = 0; i < buffer.length / 2; ++i) {
+            var n = 0;
+            n += buffer[2 * i] << 8;
+            n += buffer[2 * i + 1] << 0;
+            nums.push(n);
+        }
+
+        nums.forEach(n => console.log(n));
+
+        nums.sort((x, y) => x - y);
+        nums = nums.map(n => utils.intTo16BigEndianString(n));
+        res.write(nums.reduce(function (acc, curr) {
+            return acc + curr;
+        }), "binary");
+
+        res.end();
+    });
+}
+
 
 module.exports = {
     handleRequest: function (req, res) {
@@ -208,42 +245,10 @@ module.exports = {
         //console.log(req.url);
 
         if (req.method == 'POST') {
-            res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
-
-            var buffer = Buffer.alloc(0);
-            //var data = '';
-
-            req.on('data', function (chunk) {
-                buffer = Buffer.concat([buffer, Buffer.from(chunk, 'binary')]);
-                //data += chunk.toString('binary');
-            });
-
-            req.on('end', function () {
-                console.log(buffer.toString('hex'));
-                //console.log(querystring.parse(data));
-
-                var nums = [];
-
-                for (var i = 0; i < buffer.length / 2; ++i) {
-                    var n = 0;
-                    n += buffer[2 * i] << 8;
-                    n += buffer[2 * i + 1] << 0;
-                    nums.push(n);
-                }
-
-                nums.forEach(n => console.log(n));
-
-                nums.sort((x, y) => x - y);
-                nums = nums.map(n => utils.intTo16BigEndianString(n));
-                res.write(nums.reduce(function (acc, curr) {
-                    return acc + curr;
-                }), "binary");
-
-                res.end();
-            });
+            servePostRequest(req, res);
         }
         else if (req.method == 'GET') {
-            serveRequest(req, res);
+            serveGetRequest(req, res);
         }
     }
 }
