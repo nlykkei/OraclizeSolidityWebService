@@ -200,7 +200,12 @@ function serveGetRequest(req, res) {
 }
 
 function servePostRequest(req, res) {
+    var path = url.parse(req.url).path;
+    var index = path.indexOf('/', 1);
+    var service = path.substring(1, index);
+    var args = path.substring(index + 1);
 
+    /* array sorting */
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     var buffer = Buffer.alloc(0);
@@ -249,7 +254,6 @@ function servePostRequest(req, res) {
         res.end();
     });
 }
-
 
 module.exports = {
     handleRequest: function (req, res) {
