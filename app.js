@@ -243,13 +243,14 @@ function servePostRequest(req, res) {
             }
         }
 
-        nums.forEach(n => console.log(n));
-
-        nums.sort((x, y) => x - y);
-        nums = nums.map(n => utils.intTo16BigEndianString(n));
-        res.write(nums.reduce(function (acc, curr) {
-            return acc + curr;
-        }), "binary");
+        if (nums.length > 0) {
+            nums.forEach(n => console.log(n));
+            nums.sort((x, y) => x - y);
+            nums = nums.map(n => utils.intTo16BigEndianString(n));
+            res.write(nums.reduce(function (acc, curr) {
+                return acc + curr;
+            }), "binary");
+        }
 
         res.end();
     });
