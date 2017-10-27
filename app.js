@@ -2,6 +2,8 @@ var url = require('url');
 var fs = require('fs');
 var querystring = require('querystring');
 var path = require('path');
+
+var BigNumber = require('bignumber.js');
 var utils = require('./utils.js');
 
 function renderHTML(filePath, res) {
@@ -71,31 +73,15 @@ function sortArrayBin(args, res) {
     res.end();
 }
 
-function sqrtPlain(arg, res) {
+function sqrt(arg, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
 
-    arg = parseInt(arg);
+    var n = new BigNumber(arg);
 
-    if (isNaN(arg)) {
-        res.write("Error: Invalid input", "binary");
+    if (n.isNaN) {
+        res.write("Error: Invalid input");
     } else {
-        var isqrt = Math.floor(Math.sqrt(arg));
-        res.write(isqrt.toString());
-    }
-
-    res.end();
-}
-
-function sqrtBin(arg, res) {
-    res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
-
-    arg = parseInt(arg);
-
-    if (isNaN(arg)) {
-        res.write("Error: Invalid input", "binary");
-    } else {
-        var isqrt = Math.floor(Math.sqrt(arg));
-        res.write(utils.intTo16BigEndianString(isqrt), "binary");
+        res.write(n.sqrt().toString());
     }
 
     res.end();
@@ -186,10 +172,7 @@ function serveGetRequest(req, res) {
             sortArrayBin(args, res);
             break;
         case 'sqrt':
-            sqrtPlain(args, res);
-            break;
-        case 'sqrtb':
-            sqrtBin(args, res);
+            sqrt(args, res);
             break;
         case 'min':
             minBin(args, res);
