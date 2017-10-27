@@ -78,10 +78,10 @@ function sqrt(arg, res) {
 
     var n = new BigNumber(arg);
 
-    if (n.isNaN) {
+    if (n.isNaN()) {
         res.write("Error: Invalid input");
     } else {
-        res.write(n.sqrt().toString());
+        res.write(n.sqrt().floor().toString());
     }
 
     res.end();
