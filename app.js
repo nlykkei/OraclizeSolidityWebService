@@ -109,11 +109,15 @@ function minBin(args, res) {
     if (args.some(arg => isNaN(arg))) {
         res.write("Error: Invalid input", "binary");
     } else {
-        minIndex = 0;
-        for (var i = 1; i < args.length; ++i) {
-            if (args[i] < args[minIndex]) minIndex = i;
+        if (arr.length == 0) {
+            min = 0;
+        } else {
+            min = arr[0];
+            for (var i = 1; i < args.length; ++i) {
+                if (args[i] < min) min = args[i];
+            }
         }
-        res.write(utils.intTo32BigEndianString(((minIndex & 0xFFFF) << 16) + (args[minIndex] & 0xFFFF)), "binary");
+        res.write(utils.intTo16BigEndianString(min), "binary");
     }
 
     res.end();
@@ -205,7 +209,6 @@ function servePostRequest(req, res) {
     var service = path.substring(1, index);
     var args = path.substring(index + 1);
 
-    /* array sorting */
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     var buffer = Buffer.alloc(0);
@@ -218,40 +221,8 @@ function servePostRequest(req, res) {
 
     req.on('end', function () {
         console.log(buffer.toString('hex'));
-        console.log(buffer.length);
         //console.log(querystring.parse(data));
-
-        var nums = [];
-
-        for (var i = 0; i < buffer.length; ++i) {
-            switch (buffer[i]) { // code
-                case 1: // =0
-                    nums.push(0);
-                    break;
-                case 2: // low-order byte
-                    nums.push(buffer[++i]);
-                    break;
-                case 4: // high-order byte
-                    nums.push(buffer[++i] << 8);
-                    break;
-                case 8: // both
-                    var n = 0;
-                    n += (buffer[++i] << 8);
-                    n += (buffer[++i] << 0);
-                    nums.push(n);
-                    break;
-            }
-        }
-
-        if (nums.length > 0) {
-            nums.forEach(n => console.log(n));
-            nums.sort((x, y) => x - y);
-            nums = nums.map(n => utils.intTo16BigEndianString(n));
-            res.write(nums.reduce(function (acc, curr) {
-                return acc + curr;
-            }), "binary");
-        }
-
+        res.write('Unsupported method: POST', 'binary');
         res.end();
     });
 }
@@ -259,9 +230,9 @@ function servePostRequest(req, res) {
 module.exports = {
     handleRequest: function (req, res) {
 
-        //console.log(req.method);
-        //console.log(req.headers);
-        //console.log(req.url);
+        console.log(req.method);
+        console.log(req.headers);
+        console.log(req.url);
 
         if (req.method == 'POST') {
             servePostRequest(req, res);
