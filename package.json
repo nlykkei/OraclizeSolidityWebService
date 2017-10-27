@@ -16,6 +16,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "bignumber.js": "^4.10.0"
+    "bignumber.js": "^4.1.0"
   }
 }
