@@ -109,7 +109,7 @@ function minBin(args, res) {
     if (args.some(arg => isNaN(arg))) {
         res.write("Error: Invalid input", "binary");
     } else {
-        if (arr.length == 0) {
+        if (args.length == 0) {
             min = 0;
         } else {
             min = arr[0];
