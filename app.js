@@ -290,7 +290,7 @@ function shortestPath(args, res) {
             w[i] = new Array(n);
             sp[i] = new Array(n);
             for (var j = 0; j < n; ++j) {
-                w[i][j] = (args[i * n + j] > MAX_WEIGHT ? Infinity : args[i * n + j]);
+                w[i][j] = (args[i * n + j] >= MAX_WEIGHT ? Infinity : args[i * n + j]);
                 sp[i][j] = new Array(k + 1);
                 sp[i][j].fill(Infinity); // sp[i][j][0] = Infinity (i != j)
                 sp[i][j][1] = w[i][j]; // sp[i][j][1] = w[i][j]
