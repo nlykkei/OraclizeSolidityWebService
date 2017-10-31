@@ -178,7 +178,7 @@ function floydWarshall(w) {
     // Set distance between vertices to edge weight (or zero)
     for (var i = 0; i < n; ++i) {
         for (var j = 0; j < n; ++j) {
-            if (i == j) d[i][i] = 0;
+            if (i == j) d[i][j] = 0;
             else d[i][j] = w[i][j];
         }
     }
@@ -230,7 +230,7 @@ function allPairsShortestPath(args, res) {
         for (var i = 0; i < n; ++i) {
             w[i] = new Array(n);
             for (var j = 0; j < n; ++j) {
-                w[i][j] = (args[i * n + j] > MAX_WEIGHT  ? Infinity : args[i * n + j]);
+                w[i][j] = (args[i * n + j] >= MAX_WEIGHT ? Infinity : args[i * n + j]);
             }
         }
 
@@ -241,7 +241,7 @@ function allPairsShortestPath(args, res) {
 
         console.log(d);
 
-        var distBin = d.map(n => utils.intTo16BigEndianString(n));
+        var distBin = d.map(row => row = row.map(n => utils.intTo16BigEndianString(n == Infinity ? 0xFFF : n)));
         //var nextBin = next.map(n => utils.intTo16BigEndianString(n));
 
         //res.write(nextBin.reduce((acc, curr) => acc + curr,
