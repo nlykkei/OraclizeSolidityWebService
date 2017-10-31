@@ -241,7 +241,14 @@ function allPairsShortestPath(args, res) {
 
         console.log(d);
 
-        var distBin = d.map(row => row = row.map(n => utils.intTo16BigEndianString(n == Infinity ? 0xFFF : n)));
+        var distBin = [];
+
+        for (var i = 0; i < n; ++i) {
+            for (var j = 0; j < n; ++j) {
+                distBin.push(utils.intTo16BigEndianString(d[i][j] == Infinity ? 0xFFFF : d[i][j]));
+            }
+        }
+     
         //var nextBin = next.map(n => utils.intTo16BigEndianString(n));
 
         //res.write(nextBin.reduce((acc, curr) => acc + curr,
