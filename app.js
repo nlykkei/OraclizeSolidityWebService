@@ -186,7 +186,7 @@ function floydWarshall(w) {
     // Find all-pairs shortest path using intermediary vertices
     // sp(i,j,k) := Shortest path i -> j using {1,..,k} as intermediary points
     // base: sp(i,j,0) = w(i,j) 
-    // recursion: sp(i,j,k) = min(sp(i,j,k-1), sp(i,k,k-1) + sp(k,j,k-1))
+    // recursion: sp(i,j,k) = min(sp(i,j,k-1), sp(i,k,k-1) + sp(k,j,k-1)) (k >= 1)
     for (var k = 0; k < n; ++k) {
         for (var i = 0; i < n; ++i) {
             for (var j = 0; j < n; ++j) {
