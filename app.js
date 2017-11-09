@@ -2,7 +2,6 @@ var url = require('url');
 var fs = require('fs');
 var querystring = require('querystring');
 var path = require('path');
-
 var BigNumber = require('bignumber.js');
 var utils = require('./utils.js');
 
@@ -38,6 +37,13 @@ function renderHTML(filePath, res) {
     });
 }
 
+/**
+ * Sorts an array of integers represented by "n1/n2/...".
+ * The sorted array is send to the client in plain form "n1 n2...".
+ *
+ * @param {string} args integer array.
+ * @returns {void} 
+ */
 function sortArrayPlain(args, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
 
@@ -55,6 +61,13 @@ function sortArrayPlain(args, res) {
     res.end();
 }
 
+/**
+ * Sorts an array of integers represented by "n1/n2/...".
+ * The sorted array is send to the client in (16-bit) big-endian binary form.
+ *
+ * @param {string} args integer array.
+ * @returns {void} 
+ */
 function sortArrayBin(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
@@ -73,6 +86,13 @@ function sortArrayBin(args, res) {
     res.end();
 }
 
+/**
+ * Computes the integral square root of an integer represented by "n".
+ * The result is send to the client in plain form "n".
+ *
+ * @param {string} args integer.
+ * @returns {void} 
+ */
 function sqrt(arg, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
 
@@ -87,6 +107,13 @@ function sqrt(arg, res) {
     res.end();
 }
 
+/**
+ * Computes the minimum over an array of integers represented by "n1/n2/...".
+ * The result is send to the client in (16-bit) big-endian binary form.
+ *
+ * @param {string} args integer array.
+ * @returns {void} 
+ */
 function minBin(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
@@ -109,6 +136,13 @@ function minBin(args, res) {
     res.end();
 }
 
+/**
+ * Computes the indicies of three elements in array of integers "n1/n2/..." that sum to 100.
+ * The result is send to the client in (16-bit) big-endian binary form.
+ *
+ * @param {string} args integer array.
+ * @returns {void} 
+ */
 function threeSumBin(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
@@ -129,6 +163,12 @@ function threeSumBin(args, res) {
     res.end();
 }
 
+/**
+ * Computes the indicies of three elements in sorted array of integers that sum to 100.
+ *
+ * @param {Array} S sorted integer array.
+ * @returns {Object} object containing indicies. 
+ */
 function threeSum(S) {
     var result = [];
     var n = S.length;
@@ -139,10 +179,9 @@ function threeSum(S) {
         while (start < end) {
             b = S[start];
             c = S[end];
-            if (a.val + b.val + c.val == 0) {
+            if (a.val + b.val + c.val == 100) {
                 result.push({ a: a, b: b, c: c });
-                // Continue search for all triplet combinations summing to zero
-                if (b.val == S[start + 1].val) {
+                if (b.val == S[start + 1].val) { // Search for all combinations that sum to 100
                     start = start + 1;
                 } else {
                     end = end - 1;
@@ -248,7 +287,7 @@ function allPairsShortestPath(args, res) {
                 distBin.push(utils.intTo16BigEndianString(d[i][j] == Infinity ? 0xFFFF : d[i][j]));
             }
         }
-     
+
         //var nextBin = next.map(n => utils.intTo16BigEndianString(n));
 
         //res.write(nextBin.reduce((acc, curr) => acc + curr,
