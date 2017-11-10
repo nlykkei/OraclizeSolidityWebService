@@ -5,6 +5,13 @@ var path = require('path');
 var BigNumber = require('bignumber.js');
 var utils = require('./utils.js');
 
+/**
+ * Renders HTML.
+ *
+ * @param {ServerRequest} req request.
+ * @param {ServerResponse} res response. 
+ * @returns {void} 
+ */
 function renderHTML(filePath, res) {
 
     if (filePath == '/') {
@@ -38,10 +45,11 @@ function renderHTML(filePath, res) {
 }
 
 /**
- * Sorts an array of integers represented by "n1/n2/...".
+ * Sorts an array of integers.
  * The sorted array is send to the client in plain form "n1 n2...".
  *
- * @param {string} args integer array.
+ * @param {string} args integer array ("n1/n2/...").
+ * @param {ServerResponse} res response.
  * @returns {void} 
  */
 function sortArrayPlain(args, res) {
@@ -62,10 +70,11 @@ function sortArrayPlain(args, res) {
 }
 
 /**
- * Sorts an array of integers represented by "n1/n2/...".
+ * Sorts an array of integers.
  * The sorted array is send to the client in (16-bit) big-endian binary form.
  *
- * @param {string} args integer array.
+ * @param {string} args integer array ("n1/n2/...").
+ * @param {ServerResponse} res response.
  * @returns {void} 
  */
 function sortArrayBin(args, res) {
@@ -87,10 +96,11 @@ function sortArrayBin(args, res) {
 }
 
 /**
- * Computes the integral square root of an integer represented by "n".
+ * Computes integral square root of an integer.
  * The result is send to the client in plain form "n".
  *
- * @param {string} args integer.
+ * @param {string} args integer ("n").
+ * @param {ServerResponse} res response.
  * @returns {void} 
  */
 function sqrt(arg, res) {
@@ -108,10 +118,11 @@ function sqrt(arg, res) {
 }
 
 /**
- * Computes the minimum over an array of integers represented by "n1/n2/...".
+ * Computes minimum over an array of integers.
  * The result is send to the client in (16-bit) big-endian binary form.
  *
- * @param {string} args integer array.
+ * @param {string} args integer array ("n1/n2/...").
+ * @param {ServerResponse} res response.
  * @returns {void} 
  */
 function minBin(args, res) {
@@ -137,10 +148,11 @@ function minBin(args, res) {
 }
 
 /**
- * Computes the indicies of three elements in array of integers "n1/n2/..." that sum to 100.
+ * Computes indicies of three elements in array of integers that sum to 100.
  * The result is send to the client in (16-bit) big-endian binary form.
  *
- * @param {string} args integer array.
+ * @param {string} args integer array ("n1/n2/...").
+ * @param {ServerResponse} res response.
  * @returns {void} 
  */
 function threeSumBin(args, res) {
@@ -164,7 +176,7 @@ function threeSumBin(args, res) {
 }
 
 /**
- * Computes the indicies of three elements in sorted array of integers that sum to 100.
+ * Computes indicies of three elements in sorted array of integers that sum to 100.
  *
  * @param {Array} S sorted integer array.
  * @returns {Object} object containing indicies. 
@@ -199,9 +211,14 @@ function threeSum(S) {
 
 const MAX_WEIGHT = 100;
 
-// Floyd-Warshall algorithm O(n^3)
+/**
+ * Computes all-pairs shortest path using Floyd-Warshall algorithm.
+ *
+ * @param {Array} w weight matrix.
+ * @returns {Object} object containing shortest path distances and path reconstruction. 
+ */
 function floydWarshall(w) {
-    var n = w.length; // Length of weight function
+    var n = w.length; // Length of weight matrix
     var d = new Array(n); // All-pairs shortest distances
     var next = new Array(n); // Path reconstruction
 
@@ -239,6 +256,14 @@ function floydWarshall(w) {
     return { d: d, next: next };
 }
 
+/**
+ * Reconstructs path between vertices.
+ *
+ * @param {int} u start vertex.
+ * @param {int} v end vertex.
+ * @param {Array} next path reconstruction. 
+ * @returns {Array} path between vertices. 
+ */
 function reconstructPath(u, v, next) {
     if (next[u][v] == null) return [];
     path = [u];
@@ -249,6 +274,14 @@ function reconstructPath(u, v, next) {
     return path;
 }
 
+/**
+ * Computes all-pairs shortest path in graph.
+ * The result is send to the client in (16-bit) big-endian binary form.
+ *
+ * @param {string} args weight matrix ("n1/n2/...").
+ * @param {ServerResponse} res response. 
+ * @returns {void} 
+ */
 function allPairsShortestPath(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
@@ -262,7 +295,7 @@ function allPairsShortestPath(args, res) {
         res.write("Error: Invalid input: Not a square array", "binary");
     }
     else {
-        // Parse into (n x n) array 'w' (weights)
+        // Parse into (n x n) matrix 'w' (weights)
         var w = new Array(n);
         var n = Math.sqrt(args.length);
 
@@ -275,7 +308,7 @@ function allPairsShortestPath(args, res) {
 
         var result = floydWarshall(w);
 
-        var d = result['d']; // Shortests paths 
+        var d = result['d']; // All-pairs shortests path 
         var next = result['next']; // Path reconstruction
 
         console.log(d);
@@ -289,15 +322,23 @@ function allPairsShortestPath(args, res) {
         }
 
         //var nextBin = next.map(n => utils.intTo16BigEndianString(n));
-
         //res.write(nextBin.reduce((acc, curr) => acc + curr,
         //    distBin.reduce((acc, curr) => acc + curr)), "binary");
+
         res.write(distBin.reduce((acc, curr) => acc + curr), "binary");
     }
 
     res.end();
 }
 
+/**
+ * Computes path of certain criteria in graph.
+ * The result is send to the client in (16-bit) big-endian binary form.
+ *
+ * @param {string} args length, max. weight, and weight matrix ("k/W/n1/n2/...").
+ * @param {ServerResponse} res response. 
+ * @returns {void} 
+ */
 function shortestPath(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
@@ -405,6 +446,13 @@ function shortestPath(args, res) {
     res.end();
 }
 
+/**
+ * Serves GET-requests.
+ *
+ * @param {ServerRequest} req request.
+ * @param {ServerResponse} res response. 
+ * @returns {void} 
+ */
 function serveGetRequest(req, res) {
     var path = url.parse(req.url).path;
     var index = path.indexOf('/', 1);
@@ -439,13 +487,20 @@ function serveGetRequest(req, res) {
     }
 }
 
+/**
+ * Serves POST-requests.
+ *
+ * @param {ServerRequest} req request.
+ * @param {ServerResponse} res response. 
+ * @returns {void} 
+ */
 function servePostRequest(req, res) {
     var path = url.parse(req.url).path;
     var index = path.indexOf('/', 1);
     var service = path.substring(1, index);
     var args = path.substring(index + 1);
 
-    res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
 
     var buffer = Buffer.alloc(0);
     //var data = '';
@@ -458,7 +513,7 @@ function servePostRequest(req, res) {
     req.on('end', function () {
         console.log(buffer.toString('hex'));
         //console.log(querystring.parse(data));
-        res.write('Unsupported method: POST', 'binary');
+        res.write('Unsupported method: POST');
         res.end();
     });
 }
