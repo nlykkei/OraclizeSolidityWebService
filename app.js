@@ -165,6 +165,7 @@ function threeSumBin(args, res) {
     } else {
         args = args.map((n, index) => { return { val: n, index: index } });
         S = args.sort((x, y) => x.val - y.val);
+        console.log(S);
         result = threeSum(S);
         console.log(result);
         if (result.length > 0) {
