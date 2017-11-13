@@ -165,7 +165,6 @@ function threeSumBin(args, res) {
     } else {
         args = args.map((n, index) => { return { val: n, index: index } });
         S = args.sort((x, y) => x.val - y.val);
-        console.log(S);
         result = threeSum(S);
         console.log(result);
         if (result.length > 0) {
@@ -200,7 +199,7 @@ function threeSum(S) {
                 } else {
                     end = end - 1;
                 }
-            } else if (a.val + b.val + c.val > 0) {
+            } else if (a.val + b.val + c.val > 100) {
                 end = end - 1;
             } else {
                 start = start + 1;
