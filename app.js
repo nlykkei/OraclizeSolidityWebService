@@ -166,6 +166,7 @@ function threeSumBin(args, res) {
         args = args.map((n, index) => { return { val: n, index: index } });
         S = args.sort((x, y) => x.val - y.val);
         result = threeSum(S);
+        console.log(result);
         if (result.length > 0) {
             res.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
                 + utils.intTo16BigEndianString(result[0].c.index & 0xFFFF), "binary");
