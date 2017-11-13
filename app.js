@@ -191,17 +191,16 @@ function threeSum(S) {
         var start = i + 1;
         var end = n - 1;
         while (start < end) {
-            b = S[start];
-            c = S[end];
-            if ((a.val + b.val + c.val) == 100) {
-                console.log("FOUND!");
+            var b = S[start];
+            var c = S[end];
+            if (a.val + b.val + c.val == 100) {
                 result.push({ a: a, b: b, c: c });
                 if (b.val == S[start + 1].val) { // Search for all combinations that sum to 100
                     start = start + 1;
                 } else {
                     end = end - 1;
                 }
-            } else if ((a.val + b.val + c.val) > 0) {
+            } else if (a.val + b.val + c.val > 0) {
                 end = end - 1;
             } else {
                 start = start + 1;
