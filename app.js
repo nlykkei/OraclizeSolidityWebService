@@ -194,6 +194,7 @@ function threeSum(S) {
             b = S[start];
             c = S[end];
             if ((a.val + b.val + c.val) == 100) {
+                console.log("FOUND!");
                 result.push({ a: a, b: b, c: c });
                 if (b.val == S[start + 1].val) { // Search for all combinations that sum to 100
                     start = start + 1;
