@@ -163,9 +163,11 @@ function threeSumBin(args, res) {
     if (args.some(arg => isNaN(arg))) {
         res.write("Error: Invalid input", "binary");
     } else {
+        sum = args.shift();
         args = args.map((n, index) => { return { val: n, index: index } });
         S = args.sort((x, y) => x.val - y.val);
-        result = threeSum(S);
+        console.log(sum, S);
+        result = threeSum(S, sum);
         console.log(result);
         if (result.length > 0) {
             res.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
@@ -177,12 +179,13 @@ function threeSumBin(args, res) {
 }
 
 /**
- * Computes indicies of three elements in sorted array of integers that sum to 100.
+ * Computes indicies of three elements in sorted array of integers that sum to target sum.
  *
  * @param {Array} S sorted integer array.
+ * @param {int} sum target sum.
  * @returns {Object} object containing indicies. 
  */
-function threeSum(S) {
+function threeSum(S, sum) {
     var result = [];
     var n = S.length;
     for (var i = 0; i <= n - 3; ++i) {
@@ -192,14 +195,14 @@ function threeSum(S) {
         while (start < end) {
             var b = S[start];
             var c = S[end];
-            if (a.val + b.val + c.val == 100) {
+            if (a.val + b.val + c.val == sum) {
                 result.push({ a: a, b: b, c: c });
-                if (b.val == S[start + 1].val) { // Search for all combinations that sum to 100
+                if (b.val == S[start + 1].val) { // Search for all combinations that sum to target sum
                     start = start + 1;
                 } else {
                     end = end - 1;
                 }
-            } else if (a.val + b.val + c.val > 100) {
+            } else if (a.val + b.val + c.val > sum) {
                 end = end - 1;
             } else {
                 start = start + 1;
