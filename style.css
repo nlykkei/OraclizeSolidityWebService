@@ -1,24 +1,53 @@
 
 html, body {
-	width: 100%;
-	height: 100%;
-	padding: 0;
-	margin: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    background: @bgcolor;
 }
 
-h1 { color: black; 
+h1 { 
+    color: black; 
     font-family: Tahoma, Geneva, Verdana, sans-serif;
     font-size: 45px; 
     font-weight: bold; 
     line-height: 1; 
-    text-align: center; }
+    text-align: center; 
+}
 
-h2 { color: black; 
+h2 { 
+    color: black; 
     font-family: Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 18px; }
+    font-size: 18px; 
+}
 
 
-h4 { color: black;
+h4 { 
+    color: black;
     font-family: Tahoma, Geneva, Verdana, sans-serif; 
-    font-size: 13px; } 
+    font-size: 13px; 
+} 
 
+a {
+    font-family: Tahoma, Geneva, Verdana, sans-serif; 
+}
+
+.button {
+    background-color: lightgray;
+    border:  2px solid black;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 13px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.button:hover {
+    background-color: #555555;
+    color: white;
+}

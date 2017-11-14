@@ -5,6 +5,8 @@ var path = require('path');
 var BigNumber = require('bignumber.js');
 var utils = require('./utils.js');
 
+var state = false;
+
 /**
  * Renders HTML.
  *
@@ -16,10 +18,13 @@ function renderHTML(filePath, res) {
 
     if (filePath == '/') {
         filePath = '/index.html';
+    } else if (filePath == '/state') {
+        state = !state;
+        filePath = '/index.html';
     }
 
-    filePath = __dirname + filePath;
-    var extname = path.extname(filePath);
+    absFilePath = __dirname + filePath;
+    var extname = path.extname(absFilePath);
     var contentType = 'text/html';
 
     switch (extname) {
@@ -31,12 +36,17 @@ function renderHTML(filePath, res) {
             break;
     }
 
-    fs.readFile(filePath, null, function (err, data) {
+    fs.readFile(absFilePath, 'utf8', function (err, data) {
         if (err) {
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.write('File not found!');
         } else {
             res.writeHead(200, { 'Content-Type': contentType });
+
+            if (filePath == '/style.css') {
+                data = data.replace(/@bgcolor/g, state ? 'palegreen' : 'tomato');
+            }
+
             res.write(data);
         }
 
