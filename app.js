@@ -5,7 +5,7 @@ var path = require('path');
 var BigNumber = require('bignumber.js');
 var utils = require('./utils.js');
 
-var state = false;
+var state = true;
 
 /**
  * Renders HTML.
@@ -17,9 +17,6 @@ var state = false;
 function renderHTML(filePath, res) {
 
     if (filePath == '/') {
-        filePath = '/index.html';
-    } else if (filePath == '/state') {
-        state = !state;
         filePath = '/index.html';
     }
 
@@ -38,13 +35,29 @@ function renderHTML(filePath, res) {
 
     fs.readFile(absFilePath, 'utf8', function (err, data) {
         if (err) {
-            res.writeHead(404, { 'Content-Type': 'text/plain' });
-            res.write('File not found!');
+            res.writeHead(404, { 'Content-Type': 'text/html' });
+            res.write(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="utf-8">
+                    <title>Oraclize Solidity</title>
+                    <link rel="stylesheet" type="text/css" href="style.css">
+                </head>
+                <body>
+                    <h1>Oraclize Solidity WebService</h1>
+                    <br><br>
+                    <div style="text-align:center">
+                        <h2 style="font-size: 26px;">File not found.</h2>
+                    </div>
+                </body>
+                </html>`);
         } else {
             res.writeHead(200, { 'Content-Type': contentType });
-
             if (filePath == '/style.css') {
                 data = data.replace(/@bgcolor/g, state ? 'palegreen' : 'tomato');
+            } else if (filePath == '/index.html') {
+                data = data.replace(/@state/g, state ? 'Valid results' : 'Invalid results')
             }
 
             res.write(data);
@@ -61,7 +74,7 @@ function renderHTML(filePath, res) {
  * @param {string} args integer array ("n1/n2/...").
  * @param {ServerResponse} res response.
  * @returns {void} 
- */
+                                */
 function sortArrayPlain(args, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
 
@@ -86,7 +99,7 @@ function sortArrayPlain(args, res) {
  * @param {string} args integer array ("n1/n2/...").
  * @param {ServerResponse} res response.
  * @returns {void} 
- */
+                                */
 function sortArrayBin(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
@@ -112,7 +125,7 @@ function sortArrayBin(args, res) {
  * @param {string} args integer ("n").
  * @param {ServerResponse} res response.
  * @returns {void} 
- */
+                                */
 function sqrt(arg, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
 
@@ -134,7 +147,7 @@ function sqrt(arg, res) {
  * @param {string} args integer array ("n1/n2/...").
  * @param {ServerResponse} res response.
  * @returns {void} 
- */
+                                */
 function minBin(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
@@ -164,7 +177,7 @@ function minBin(args, res) {
  * @param {string} args integer array ("n1/n2/...").
  * @param {ServerResponse} res response.
  * @returns {void} 
- */
+                                */
 function threeSumBin(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
@@ -177,7 +190,16 @@ function threeSumBin(args, res) {
         args = args.map((n, index) => { return { val: n, index: index } });
         S = args.sort((x, y) => x.val - y.val);
         console.log(sum, S);
-        result = threeSum(S, sum);
+        var result = [];
+        if (state) {
+            result = threeSum(S, sum);
+        } else {
+            result.push({
+                a: { val: 0, index: Math.floor((Math.random() * S.lenght)) },
+                b: { val: 0, index: Math.floor((Math.random() * S.lenght)) },
+                c: { val: 0, index: Math.floor((Math.random() * S.lenght)) }
+            });
+        }
         console.log(result);
         if (result.length > 0) {
             res.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
@@ -193,7 +215,7 @@ function threeSumBin(args, res) {
  *
  * @param {Array} S sorted integer array.
  * @param {int} sum target sum.
- * @returns {Object} object containing indicies. 
+ * @returns {Object} object containing indicies.
  */
 function threeSum(S, sum) {
     var result = [];
@@ -229,7 +251,7 @@ const MAX_WEIGHT = 100;
  * Computes all-pairs shortest path using Floyd-Warshall algorithm.
  *
  * @param {Array} w weight matrix.
- * @returns {Object} object containing shortest path distances and path reconstruction. 
+ * @returns {Object} object containing shortest path distances and path reconstruction.
  */
 function floydWarshall(w) {
     var n = w.length; // Length of weight matrix
@@ -255,7 +277,7 @@ function floydWarshall(w) {
 
     // Find all-pairs shortest path using intermediary vertices
     // sp(i,j,k) := Shortest path i -> j using {1,..,k} as intermediary points
-    // base: sp(i,j,0) = w(i,j) 
+    // base: sp(i,j,0) = w(i,j)
     // recursion: sp(i,j,k) = min(sp(i,j,k-1), sp(i,k,k-1) + sp(k,j,k-1)) (k >= 1)
     for (var k = 0; k < n; ++k) {
         for (var i = 0; i < n; ++i) {
@@ -275,8 +297,8 @@ function floydWarshall(w) {
  *
  * @param {int} u start vertex.
  * @param {int} v end vertex.
- * @param {Array} next path reconstruction. 
- * @returns {Array} path between vertices. 
+ * @param {Array} next path reconstruction.
+ * @returns {Array} path between vertices.
  */
 function reconstructPath(u, v, next) {
     if (next[u][v] == null) return [];
@@ -293,9 +315,9 @@ function reconstructPath(u, v, next) {
  * The result is send to the client in (16-bit) big-endian binary form.
  *
  * @param {string} args weight matrix ("n1/n2/...").
- * @param {ServerResponse} res response. 
+ * @param {ServerResponse} res response.
  * @returns {void} 
- */
+                                */
 function allPairsShortestPath(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
@@ -322,7 +344,7 @@ function allPairsShortestPath(args, res) {
 
         var result = floydWarshall(w);
 
-        var d = result['d']; // All-pairs shortests path 
+        var d = result['d']; // All-pairs shortests path
         var next = result['next']; // Path reconstruction
 
         console.log(d);
@@ -350,9 +372,9 @@ function allPairsShortestPath(args, res) {
  * The result is send to the client in (16-bit) big-endian binary form.
  *
  * @param {string} args length, max. weight, and weight matrix ("k/W/n1/n2/...").
- * @param {ServerResponse} res response. 
+ * @param {ServerResponse} res response.
  * @returns {void} 
- */
+                                */
 function shortestPath(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
@@ -439,17 +461,30 @@ function shortestPath(args, res) {
         var path = [src];
         var len = sp_len;
 
-        for (var e = k; e >= 2; --e) {
-            for (var a = 0; a < n; ++a) {
-                //if (a == src || a == dest) continue; // Use intermediary edge                       
-                if (len == (w[src][a] + sp[a][dest][e - 1])) {
-                    path.push(a);
-                    src = a;
-                    len = sp[a][dest][e - 1];
+        if (state) {
+            for (var e = k; e >= 2; --e) {
+                for (var a = 0; a < n; ++a) {
+                    //if (a == src || a == dest) continue; // Use intermediary edge                       
+                    if (len == (w[src][a] + sp[a][dest][e - 1])) {
+                        path.push(a);
+                        src = a;
+                        len = sp[a][dest][e - 1];
+                    }
+                }
+            }
+            path.push(dest);
+        } else {
+            if (Math.floor((Math.random() * 2)) == 0) {
+                for (var i = 0; i < sp_len - 1; ++i) {
+                    path.push(Math.floor((Math.random() * n)));
+                }
+            } else {
+                sp_len = Math.floor((Math.random() * 10));
+                for (var i = 0; i < sp_len - 1; ++i) {
+                    path.push(Math.floor((Math.random() * n)));
                 }
             }
         }
-        path.push(dest);
 
         console.log(path, sp_len);
 
@@ -464,9 +499,9 @@ function shortestPath(args, res) {
  * Serves GET-requests.
  *
  * @param {ServerRequest} req request.
- * @param {ServerResponse} res response. 
+ * @param {ServerResponse} res response.
  * @returns {void} 
- */
+                                */
 function serveGetRequest(req, res) {
     var path = url.parse(req.url).path;
     var index = path.indexOf('/', 1);
@@ -505,9 +540,9 @@ function serveGetRequest(req, res) {
  * Serves POST-requests.
  *
  * @param {ServerRequest} req request.
- * @param {ServerResponse} res response. 
+ * @param {ServerResponse} res response.
  * @returns {void} 
- */
+                                */
 function servePostRequest(req, res) {
     var path = url.parse(req.url).path;
     var index = path.indexOf('/', 1);
@@ -516,19 +551,42 @@ function servePostRequest(req, res) {
 
     res.writeHead(200, { 'Content-Type': 'text/plain' });
 
-    var buffer = Buffer.alloc(0);
-    //var data = '';
+    //var buffer = Buffer.alloc(0);
+    var data = '';
 
     req.on('data', function (chunk) {
-        buffer = Buffer.concat([buffer, Buffer.from(chunk, 'binary')]);
-        //data += chunk.toString('binary');
+        //buffer = Buffer.concat([buffer, Buffer.from(chunk, 'binary')]);
+        data += chunk.toString('utf8');
     });
 
     req.on('end', function () {
-        console.log(buffer.toString('hex'));
-        //console.log(querystring.parse(data));
-        res.write('Unsupported method: POST');
-        res.end();
+        //console.log(buffer.toString('hex'));
+        var query = querystring.parse(data);
+        console.log(query);
+
+        if (query.state == 'flip') {
+            state = !state;
+            renderHTML('/', res);
+        } else {
+            res.writeHead(400, { 'Content-Type': 'text/html' });
+            res.write(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="utf-8">
+                <title>Oraclize Solidity</title>
+                <link rel="stylesheet" type="text/css" href="style.css">
+            </head>
+            <body>
+                <h1>Oraclize Solidity WebService</h1>
+                <br><br>
+                <div style="text-align:center">
+                    <h2 style="font-size: 26px;">Unsupported POST request.</h2>
+                </div>
+            </body>
+            </html>`);
+            res.end();
+        }
     });
 }
 
