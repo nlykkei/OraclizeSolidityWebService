@@ -140,11 +140,20 @@ function sqrt(arg, res) {
     if (n.isNaN()) {
         res.write("Error: Invalid input");
     } else {
-        var _sqrt = n.sqrt().floor().toString(10)
+        if (state) {
+            var _sqrt = n.sqrt().floor().toString(10)
+        } else {
+            if (DEBUG) {
+                console.log('[Debug]', 'sqrt:', 'Generating invalid result');
+            }
+
+            var _sqrt = Math.floor((Math.random() * 100));
+        }
 
         if (DEBUG) {
             console.log('[Debug]', 'sqrt:', 'sqrt =', _sqrt);
         }
+
 
         res.write(_sqrt);
     }
@@ -180,7 +189,7 @@ function minBin(args, res) {
         if (DEBUG) {
             console.log('[Debug]', 'minBin:', 'min =', min);
         }
-
+        
         res.write(utils.intTo16BigEndianString(min), "binary");
     }
 
@@ -206,17 +215,16 @@ function threeSumBin(args, res) {
         sum = args.shift();
         args = args.map((n, index) => { return { val: n, index: index } });
         S = args.sort((x, y) => x.val - y.val);
-
+        
         if (DEBUG) {
             console.log('[Debug]', 'treeSumBin:', 'sum =', sum, 'S =', S);
         }
-
+        
         var result = [];
 
         if (state) {
             result = threeSum(S, sum);
         } else {
-
             if (DEBUG) {
                 console.log('[Debug]', 'threeSumBin:', 'Generating invalid result');
             }
@@ -512,7 +520,6 @@ function shortestPath(args, res) {
             }
             path.push(dest);
         } else {
-
             if (DEBUG) {
                 console.log('[Debug]', 'shortestPath:', 'Generating invalid result');
             }
@@ -644,7 +651,6 @@ function servePostRequest(req, res) {
 
 module.exports = {
     handleRequest: function (req, res) {
-
         if (DEBUG) {
             console.log('[Debug]', 'handleRequest:', req.method);
             console.log('[Debug]', 'handleRequest:', req.headers);
