@@ -5,6 +5,8 @@ var path = require('path');
 var BigNumber = require('bignumber.js');
 var utils = require('./utils.js');
 
+const DEBUG = true;
+
 var state = true;
 
 /**
@@ -23,6 +25,10 @@ function renderHTML(filePath, res) {
     absFilePath = __dirname + filePath;
     var extname = path.extname(absFilePath);
     var contentType = 'text/html';
+
+    if (DEBUG) {
+        console.log('[Debug]', 'renderHTML:', absFilePath);
+    }
 
     switch (extname) {
         case '.js':
@@ -134,7 +140,13 @@ function sqrt(arg, res) {
     if (n.isNaN()) {
         res.write("Error: Invalid input");
     } else {
-        res.write(n.sqrt().floor().toString(10));
+        var _sqrt = n.sqrt().floor().toString(10)
+
+        if (DEBUG) {
+            console.log('[Debug]', 'sqrt:', 'sqrt =', _sqrt);
+        }
+
+        res.write(_sqrt);
     }
 
     res.end();
@@ -164,6 +176,11 @@ function minBin(args, res) {
                 if (args[i] < min) min = args[i];
             }
         }
+
+        if (DEBUG) {
+            console.log('[Debug]', 'minBin:', 'min =', min);
+        }
+
         res.write(utils.intTo16BigEndianString(min), "binary");
     }
 
@@ -189,18 +206,32 @@ function threeSumBin(args, res) {
         sum = args.shift();
         args = args.map((n, index) => { return { val: n, index: index } });
         S = args.sort((x, y) => x.val - y.val);
-        console.log(sum, S);
+
+        if (DEBUG) {
+            console.log('[Debug]', 'treeSumBin:', 'sum =', sum, 'S =', S);
+        }
+
         var result = [];
+
         if (state) {
             result = threeSum(S, sum);
         } else {
+
+            if (DEBUG) {
+                console.log('[Debug]', 'threeSumBin:', 'Generating invalid result');
+            }
+
             result.push({
                 a: { val: 0, index: Math.floor((Math.random() * S.lenght)) },
                 b: { val: 0, index: Math.floor((Math.random() * S.lenght)) },
                 c: { val: 0, index: Math.floor((Math.random() * S.lenght)) }
             });
         }
-        console.log(result);
+
+        if (DEBUG) {
+            console.log('[Debug]', 'threeSumBin:', 'result =', result);
+        }
+
         if (result.length > 0) {
             res.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
                 + utils.intTo16BigEndianString(result[0].c.index & 0xFFFF), "binary");
@@ -289,6 +320,7 @@ function floydWarshall(w) {
             }
         }
     }
+
     return { d: d, next: next };
 }
 
@@ -301,12 +333,17 @@ function floydWarshall(w) {
  * @returns {Array} path between vertices.
  */
 function reconstructPath(u, v, next) {
-    if (next[u][v] == null) return [];
+    if (next[u][v] == null) {
+        return [];
+    }
+
     path = [u];
+
     while (u != v) {
         u = next[u][v];
         path.push(u);
     }
+
     return path;
 }
 
@@ -347,7 +384,9 @@ function allPairsShortestPath(args, res) {
         var d = result['d']; // All-pairs shortests path
         var next = result['next']; // Path reconstruction
 
-        console.log(d);
+        if (DEBUG) {
+            console.log('[Debug]', 'allPairsShortestPath:', 'd= ', d);
+        }
 
         var distBin = [];
 
@@ -426,7 +465,6 @@ function shortestPath(args, res) {
                 for (var j = 0; j < n; ++j) {
                     for (var a = 0; a < n; ++a) {
                         // Shortest path i -> j using 'e' edges must be a shortest path from i -> a and a -> j
-                        //console.log(sp[i][j][e], w[i][a], sp[a][j][e-1]);
                         //if (a == i || a == j) continue; // Use intermediary edge
                         sp[i][j][e] = Math.min(sp[i][j][e], w[i][a] + sp[a][j][e - 1]);
                     }
@@ -474,19 +512,26 @@ function shortestPath(args, res) {
             }
             path.push(dest);
         } else {
+
+            if (DEBUG) {
+                console.log('[Debug]', 'shortestPath:', 'Generating invalid result');
+            }
+
             if (Math.floor((Math.random() * 2)) == 0) {
                 for (var i = 0; i < sp_len - 1; ++i) {
                     path.push(Math.floor((Math.random() * n)));
                 }
             } else {
-                sp_len = Math.floor((Math.random() * 10));
+                sp_len = Math.floor((Math.random() * 10)); // Random path of length 10 
                 for (var i = 0; i < sp_len - 1; ++i) {
                     path.push(Math.floor((Math.random() * n)));
                 }
             }
         }
 
-        console.log(path, sp_len);
+        if (DEBUG) {
+            console.log('[Debug]', 'shortestPath:', path, sp_len);
+        }
 
         var pathBin = path.map(n => utils.intTo16BigEndianString(n));
         res.write(pathBin.reduce((acc, curr) => acc + curr), "binary");
@@ -560,13 +605,20 @@ function servePostRequest(req, res) {
     });
 
     req.on('end', function () {
-        //console.log(buffer.toString('hex'));
+        /*
+        if (DEBUG) {
+            console.log('[Debug]', 'servePostRequest:', buffer.toString('hex'));
+        }
+        */
         var query = querystring.parse(data);
-        console.log(query);
+
+        if (DEBUG) {
+            console.log('[Debug]', 'servePostRequest:', data, query);
+        }
 
         if (query.state == 'flip') {
             state = !state;
-            renderHTML('/', res);
+            renderHTML('/', res); // index.html
         } else {
             res.writeHead(400, { 'Content-Type': 'text/html' });
             res.write(`
@@ -581,7 +633,7 @@ function servePostRequest(req, res) {
                 <h1>Oraclize Solidity WebService</h1>
                 <br><br>
                 <div style="text-align:center">
-                    <h2 style="font-size: 26px;">Unsupported POST request.</h2>
+                    <h2 style="font-size: 26px;">Request not supported.</h2>
                 </div>
             </body>
             </html>`);
@@ -593,9 +645,11 @@ function servePostRequest(req, res) {
 module.exports = {
     handleRequest: function (req, res) {
 
-        console.log(req.method);
-        console.log(req.headers);
-        console.log(req.url);
+        if (DEBUG) {
+            console.log('[Debug]', 'handleRequest:', req.method);
+            console.log('[Debug]', 'handleRequest:', req.headers);
+            console.log('[Debug]', 'handleRequest:', req.url);
+        }
 
         if (req.method == 'POST') {
             servePostRequest(req, res);
