@@ -135,25 +135,24 @@ function sortArrayBin(args, res) {
 function sqrt(arg, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
 
-    var n = new BigNumber(arg);
+    if (state) {
+        var n = new BigNumber(arg);
+    } else {
+        if (DEBUG) {
+            console.log('[Debug]', 'sqrt:', 'Generating invalid result');
+        }
+
+        var n = new BigNumber(Math.floor((Math.random() * 100)));
+    }
 
     if (n.isNaN()) {
         res.write("Error: Invalid input");
     } else {
-        if (state) {
-            var _sqrt = n.sqrt().floor().toString(10)
-        } else {
-            if (DEBUG) {
-                console.log('[Debug]', 'sqrt:', 'Generating invalid result');
-            }
-
-            var _sqrt = Math.floor((Math.random() * 100));
-        }
+        var _sqrt = n.sqrt().floor().toString(10);
 
         if (DEBUG) {
             console.log('[Debug]', 'sqrt:', 'sqrt =', _sqrt);
         }
-
 
         res.write(_sqrt);
     }
@@ -189,7 +188,7 @@ function minBin(args, res) {
         if (DEBUG) {
             console.log('[Debug]', 'minBin:', 'min =', min);
         }
-        
+
         res.write(utils.intTo16BigEndianString(min), "binary");
     }
 
@@ -215,11 +214,11 @@ function threeSumBin(args, res) {
         sum = args.shift();
         args = args.map((n, index) => { return { val: n, index: index } });
         S = args.sort((x, y) => x.val - y.val);
-        
+
         if (DEBUG) {
             console.log('[Debug]', 'treeSumBin:', 'sum =', sum, 'S =', S);
         }
-        
+
         var result = [];
 
         if (state) {
