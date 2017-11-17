@@ -27,7 +27,7 @@ function renderHTML(filePath, res) {
     var contentType = 'text/html';
 
     if (DEBUG) console.log('[Debug]', 'renderHTML:', absFilePath);
-    
+
     switch (extname) {
         case '.js':
             contentType = 'text/javascript';
@@ -132,12 +132,13 @@ function sortArrayBin(args, res) {
                                 */
 function sqrt(arg, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
+    var n;
 
     if (state) {
-        var n = new BigNumber(arg);
+        n = new BigNumber(arg);
     } else {
         if (DEBUG) console.log('[Debug]', 'sqrt:', 'Generating invalid result');
-        var n = new BigNumber(Math.floor((Math.random() * 100)));
+        n = new BigNumber(Math.floor((Math.random() * 100)));
     }
 
     if (n.isNaN()) {
@@ -207,9 +208,9 @@ function threeSumBin(args, res) {
         } else {
             if (DEBUG) console.log('[Debug]', 'threeSumBin:', 'Generating invalid result');
             result.push({
-                a: { val: 0, index: Math.floor((Math.random() * S.lenght)) },
-                b: { val: 0, index: Math.floor((Math.random() * S.lenght)) },
-                c: { val: 0, index: Math.floor((Math.random() * S.lenght)) }
+                a: { val: 0, index: Math.floor(Math.random() * S.lenght) },
+                b: { val: 0, index: Math.floor(Math.random() * S.lenght) },
+                c: { val: 0, index: Math.floor(Math.random() * S.lenght) }
             });
         }
 
@@ -218,6 +219,8 @@ function threeSumBin(args, res) {
         if (result.length > 0) {
             res.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
                 + utils.intTo16BigEndianString(result[0].c.index & 0xFFFF), "binary");
+        } else {
+            res.write("");
         }
     }
 
@@ -368,7 +371,7 @@ function allPairsShortestPath(args, res) {
         var next = result['next']; // Path reconstruction
 
         if (DEBUG) console.log('[Debug]', 'allPairsShortestPath:', 'd= ', d);
-        
+
         var distBin = [];
 
         for (var i = 0; i < n; ++i) {
@@ -494,7 +497,7 @@ function shortestPath(args, res) {
             path.push(dest);
         } else {
             if (DEBUG) console.log('[Debug]', 'shortestPath:', 'Generating invalid result');
-            
+
             if (Math.floor((Math.random() * 2)) == 0) {
                 for (var i = 0; i < sp_len - 1; ++i) {
                     path.push(Math.floor((Math.random() * n)));
@@ -508,7 +511,7 @@ function shortestPath(args, res) {
         }
 
         if (DEBUG) console.log('[Debug]', 'shortestPath:', path, sp_len);
-    
+
         var pathBin = path.map(n => utils.intTo16BigEndianString(n));
         res.write(pathBin.reduce((acc, curr) => acc + curr), "binary");
     }
@@ -586,7 +589,7 @@ function servePostRequest(req, res) {
         var query = querystring.parse(data);
 
         if (DEBUG) console.log('[Debug]', 'servePostRequest:', data, query);
-    
+
         if (query.state == 'flip') {
             state = !state;
             renderHTML('/', res); // index.html
@@ -618,7 +621,7 @@ module.exports = {
         if (DEBUG) console.log('[Debug]', 'handleRequest:', req.method);
         if (DEBUG) console.log('[Debug]', 'handleRequest:', req.headers);
         if (DEBUG) console.log('[Debug]', 'handleRequest:', req.url);
-        
+
         if (req.method == 'POST') {
             servePostRequest(req, res);
         }
