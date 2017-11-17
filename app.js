@@ -370,7 +370,7 @@ function allPairsShortestPath(args, res) {
         var d = result['d']; // All-pairs shortests path
         var next = result['next']; // Path reconstruction
 
-        if (DEBUG) console.log('[Debug]', 'allPairsShortestPath:', 'd= ', d);
+        if (DEBUG) console.log('[Debug]', 'allPairsShortestPath:', 'd =', d);
 
         var distBin = [];
 
