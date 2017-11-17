@@ -220,7 +220,7 @@ function threeSumBin(args, res) {
             res.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
                 + utils.intTo16BigEndianString(result[0].c.index & 0xFFFF), "binary");
         } else {
-            res.write("");
+            res.write("", "binary");
         }
     }
 
