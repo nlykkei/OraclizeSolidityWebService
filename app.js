@@ -195,9 +195,9 @@ function threeSumBin(args, res) {
     if (args.some(arg => isNaN(arg))) {
         res.write("Error: Invalid input", "binary");
     } else {
-        sum = args.shift();
+        var sum = args.shift();
         args = args.map((n, index) => { return { val: n, index: index } });
-        S = args.sort((x, y) => x.val - y.val);
+        var S = args.sort((x, y) => x.val - y.val);
 
         if (DEBUG) console.log('[Debug]', 'treeSumBin:', 'sum =', sum, 'S =', S);
 
@@ -208,9 +208,9 @@ function threeSumBin(args, res) {
         } else {
             if (DEBUG) console.log('[Debug]', 'threeSumBin:', 'Generating invalid result');
             result.push({
-                a: { val: 0, index: Math.floor(Math.random() * S.lenght) },
-                b: { val: 0, index: Math.floor(Math.random() * S.lenght) },
-                c: { val: 0, index: Math.floor(Math.random() * S.lenght) }
+                a: { val: 0, index: Math.floor(Math.random() * S.length) },
+                b: { val: 0, index: Math.floor(Math.random() * S.length) },
+                c: { val: 0, index: Math.floor(Math.random() * S.length) }
             });
         }
 
