@@ -499,7 +499,7 @@ function shortestPath(args, res) {
             if (DEBUG) console.log('[Debug]', 'shortestPath:', 'Generating invalid result');
 
             if (Math.floor(Math.random() * 2) == 0) {
-                for (var i = 0; i < k - 1; ++i) {
+                for (var i = 0; i < k; ++i) {
                     path.push(Math.floor((Math.random() * n)));
                 }
             } else {
