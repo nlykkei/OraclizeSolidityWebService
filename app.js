@@ -26,10 +26,8 @@ function renderHTML(filePath, res) {
     var extname = path.extname(absFilePath);
     var contentType = 'text/html';
 
-    if (DEBUG) {
-        console.log('[Debug]', 'renderHTML:', absFilePath);
-    }
-
+    if (DEBUG) console.log('[Debug]', 'renderHTML:', absFilePath);
+    
     switch (extname) {
         case '.js':
             contentType = 'text/javascript';
@@ -138,10 +136,7 @@ function sqrt(arg, res) {
     if (state) {
         var n = new BigNumber(arg);
     } else {
-        if (DEBUG) {
-            console.log('[Debug]', 'sqrt:', 'Generating invalid result');
-        }
-
+        if (DEBUG) console.log('[Debug]', 'sqrt:', 'Generating invalid result');
         var n = new BigNumber(Math.floor((Math.random() * 100)));
     }
 
@@ -149,11 +144,7 @@ function sqrt(arg, res) {
         res.write("Error: Invalid input");
     } else {
         var _sqrt = n.sqrt().floor().toString(10);
-
-        if (DEBUG) {
-            console.log('[Debug]', 'sqrt:', 'sqrt =', _sqrt);
-        }
-
+        if (DEBUG) console.log('[Debug]', 'sqrt:', 'sqrt =', _sqrt);
         res.write(_sqrt);
     }
 
@@ -176,19 +167,11 @@ function minBin(args, res) {
     if (args.some(arg => isNaN(arg))) {
         res.write("Error: Invalid input", "binary");
     } else {
-        if (args.length == 0) {
-            min = 0;
-        } else {
-            min = args[0];
-            for (var i = 1; i < args.length; ++i) {
-                if (args[i] < min) min = args[i];
-            }
+        min = 0;
+        for (var i = 0; i < args.length; ++i) {
+            if (args[i] < min) min = args[i];
         }
-
-        if (DEBUG) {
-            console.log('[Debug]', 'minBin:', 'min =', min);
-        }
-
+        if (DEBUG) console.log('[Debug]', 'minBin:', 'min =', min);
         res.write(utils.intTo16BigEndianString(min), "binary");
     }
 
@@ -215,19 +198,14 @@ function threeSumBin(args, res) {
         args = args.map((n, index) => { return { val: n, index: index } });
         S = args.sort((x, y) => x.val - y.val);
 
-        if (DEBUG) {
-            console.log('[Debug]', 'treeSumBin:', 'sum =', sum, 'S =', S);
-        }
+        if (DEBUG) console.log('[Debug]', 'treeSumBin:', 'sum =', sum, 'S =', S);
 
         var result = [];
 
         if (state) {
             result = threeSum(S, sum);
         } else {
-            if (DEBUG) {
-                console.log('[Debug]', 'threeSumBin:', 'Generating invalid result');
-            }
-
+            if (DEBUG) console.log('[Debug]', 'threeSumBin:', 'Generating invalid result');
             result.push({
                 a: { val: 0, index: Math.floor((Math.random() * S.lenght)) },
                 b: { val: 0, index: Math.floor((Math.random() * S.lenght)) },
@@ -235,9 +213,7 @@ function threeSumBin(args, res) {
             });
         }
 
-        if (DEBUG) {
-            console.log('[Debug]', 'threeSumBin:', 'result =', result);
-        }
+        if (DEBUG) console.log('[Debug]', 'threeSumBin:', 'result =', result);
 
         if (result.length > 0) {
             res.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
@@ -391,10 +367,8 @@ function allPairsShortestPath(args, res) {
         var d = result['d']; // All-pairs shortests path
         var next = result['next']; // Path reconstruction
 
-        if (DEBUG) {
-            console.log('[Debug]', 'allPairsShortestPath:', 'd= ', d);
-        }
-
+        if (DEBUG) console.log('[Debug]', 'allPairsShortestPath:', 'd= ', d);
+        
         var distBin = [];
 
         for (var i = 0; i < n; ++i) {
@@ -519,10 +493,8 @@ function shortestPath(args, res) {
             }
             path.push(dest);
         } else {
-            if (DEBUG) {
-                console.log('[Debug]', 'shortestPath:', 'Generating invalid result');
-            }
-
+            if (DEBUG) console.log('[Debug]', 'shortestPath:', 'Generating invalid result');
+            
             if (Math.floor((Math.random() * 2)) == 0) {
                 for (var i = 0; i < sp_len - 1; ++i) {
                     path.push(Math.floor((Math.random() * n)));
@@ -535,10 +507,8 @@ function shortestPath(args, res) {
             }
         }
 
-        if (DEBUG) {
-            console.log('[Debug]', 'shortestPath:', path, sp_len);
-        }
-
+        if (DEBUG) console.log('[Debug]', 'shortestPath:', path, sp_len);
+    
         var pathBin = path.map(n => utils.intTo16BigEndianString(n));
         res.write(pathBin.reduce((acc, curr) => acc + curr), "binary");
     }
@@ -611,17 +581,12 @@ function servePostRequest(req, res) {
     });
 
     req.on('end', function () {
-        /*
-        if (DEBUG) {
-            console.log('[Debug]', 'servePostRequest:', buffer.toString('hex'));
-        }
-        */
+        //if (DEBUG) console.log('[Debug]', 'servePostRequest:', buffer.toString('hex'));
+
         var query = querystring.parse(data);
 
-        if (DEBUG) {
-            console.log('[Debug]', 'servePostRequest:', data, query);
-        }
-
+        if (DEBUG) console.log('[Debug]', 'servePostRequest:', data, query);
+    
         if (query.state == 'flip') {
             state = !state;
             renderHTML('/', res); // index.html
@@ -650,12 +615,10 @@ function servePostRequest(req, res) {
 
 module.exports = {
     handleRequest: function (req, res) {
-        if (DEBUG) {
-            console.log('[Debug]', 'handleRequest:', req.method);
-            console.log('[Debug]', 'handleRequest:', req.headers);
-            console.log('[Debug]', 'handleRequest:', req.url);
-        }
-
+        if (DEBUG) console.log('[Debug]', 'handleRequest:', req.method);
+        if (DEBUG) console.log('[Debug]', 'handleRequest:', req.headers);
+        if (DEBUG) console.log('[Debug]', 'handleRequest:', req.url);
+        
         if (req.method == 'POST') {
             servePostRequest(req, res);
         }
