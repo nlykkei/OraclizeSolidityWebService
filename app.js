@@ -503,8 +503,8 @@ function shortestPath(args, res) {
                     path.push(Math.floor((Math.random() * n)));
                 }
             } else {
-                var random_len = Math.floor((Math.random() * 10)) + 1; // Random path
-                for (var i = 0; i < random_len - 1; ++i) {
+                var random_len = Math.floor(Math.random() * 10); // Random path
+                for (var i = 0; i < random_len; ++i) {
                     path.push(Math.floor((Math.random() * n)));
                 }
             }
