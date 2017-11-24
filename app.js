@@ -78,7 +78,7 @@ function renderHTML(filePath, res) {
  * @param {string} args integer array ("n1/n2/...").
  * @param {ServerResponse} res response.
  * @returns {void} 
-                                */
+ */
 function sortArrayPlain(args, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
 
@@ -103,8 +103,8 @@ function sortArrayPlain(args, res) {
  * @param {string} args integer array ("n1/n2/...").
  * @param {ServerResponse} res response.
  * @returns {void} 
-                                */
-function sortArrayBin(args, res) {
+ */
+function sortArray(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     args = args.split('/').map(arg => parseInt(arg));
@@ -129,7 +129,7 @@ function sortArrayBin(args, res) {
  * @param {string} args integer ("n").
  * @param {ServerResponse} res response.
  * @returns {void} 
-                                */
+ */
 function sqrt(arg, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     var n;
@@ -159,23 +159,26 @@ function sqrt(arg, res) {
  * @param {string} args integer array ("n1/n2/...").
  * @param {ServerResponse} res response.
  * @returns {void} 
-                                */
-function minBin(args, res) {
+ */
+function minArray(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     args = args.split('/').map(arg => parseInt(arg));
 
     if (args.some(arg => isNaN(arg))) {
         res.write("Error: Invalid input", "binary");
+    }
+    else if (args.length == 0) {
+        res.write("", "binary");
     } else {
-        min = 0;
-        for (var i = 0; i < args.length; ++i) {
+        min = args[0];
+        for (var i = 1; i < args.length; ++i) {
             if (args[i] < min) min = args[i];
         }
-        if (DEBUG) console.log('[Debug]', 'minBin:', 'min =', min);
+        if (DEBUG) console.log('[Debug]', 'minArray:', 'min =', min);
         res.write(utils.intTo16BigEndianString(min), "binary");
     }
-
+    
     res.end();
 }
 
@@ -186,8 +189,8 @@ function minBin(args, res) {
  * @param {string} args integer array ("n1/n2/...").
  * @param {ServerResponse} res response.
  * @returns {void} 
-                                */
-function threeSumBin(args, res) {
+ */
+function threeSum(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     args = args.split('/').map(arg => parseInt(arg));
@@ -206,7 +209,7 @@ function threeSumBin(args, res) {
         if (state) {
             result = threeSum(S, sum);
         } else {
-            if (DEBUG) console.log('[Debug]', 'threeSumBin:', 'Generating invalid result');
+            if (DEBUG) console.log('[Debug]', 'threeSum:', 'Generating invalid result');
             result.push({
                 a: { val: 0, index: Math.floor(Math.random() * S.length) },
                 b: { val: 0, index: Math.floor(Math.random() * S.length) },
@@ -214,7 +217,7 @@ function threeSumBin(args, res) {
             });
         }
 
-        if (DEBUG) console.log('[Debug]', 'threeSumBin:', 'result =', result);
+        if (DEBUG) console.log('[Debug]', 'threeSum:', 'result =', result);
 
         if (result.length > 0) {
             res.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
@@ -228,7 +231,7 @@ function threeSumBin(args, res) {
 }
 
 /**
- * Computes indicies of three elements in sorted array of integers that sum to target sum.
+ * Computes indices of three elements in sorted array of integers that sum to target sum.
  *
  * @param {Array} S sorted integer array.
  * @param {int} sum target sum.
@@ -293,8 +296,8 @@ function floydWarshall(w) {
     }
 
     // Find all-pairs shortest path using intermediary vertices
-    // sp(i,j,k) := Shortest path i -> j using {1,..,k} as intermediary points
-    // base: sp(i,j,0) = w(i,j)
+    // sp(i,j,k) := Shortest path distance i -> j using {1,..,k} as intermediary points
+    // base: sp(i,j,0) = w(i,j), sp(i,i,0) = 0
     // recursion: sp(i,j,k) = min(sp(i,j,k-1), sp(i,k,k-1) + sp(k,j,k-1)) (k >= 1)
     for (var k = 0; k < n; ++k) {
         for (var i = 0; i < n; ++i) {
@@ -322,7 +325,6 @@ function reconstructPath(u, v, next) {
     if (next[u][v] == null) {
         return [];
     }
-
     path = [u];
 
     while (u != v) {
@@ -340,7 +342,7 @@ function reconstructPath(u, v, next) {
  * @param {string} args weight matrix ("n1/n2/...").
  * @param {ServerResponse} res response.
  * @returns {void} 
-                                */
+ */
 function allPairsShortestPath(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
@@ -349,8 +351,7 @@ function allPairsShortestPath(args, res) {
     if (args.some(arg => isNaN(arg))) {
         res.write("Error: Invalid input", "binary");
     }
-
-    if (!Number.isInteger(Math.sqrt(args.length))) {
+    else if (!Number.isInteger(Math.sqrt(args.length))) {
         res.write("Error: Invalid input: Not a square array", "binary");
     }
     else {
@@ -391,14 +392,14 @@ function allPairsShortestPath(args, res) {
 }
 
 /**
- * Computes path of certain criteria in graph.
+ * Computes (shortest) path of certain criteria in graph.
  * The result is send to the client in (16-bit) big-endian binary form.
  *
  * @param {string} args length, max. weight, and weight matrix ("k/W/n1/n2/...").
  * @param {ServerResponse} res response.
  * @returns {void} 
-                                */
-function shortestPath(args, res) {
+ */
+function kPath(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     args = args.split('/').map(arg => parseInt(arg));
@@ -428,20 +429,20 @@ function shortestPath(args, res) {
     else {
         var n = Math.sqrt(args.length);
         var w = new Array(n);
-        var sp = new Array(n);
+        var kp = new Array(n);
 
         // Parse into (n x n) weight array 'w'
-        // sp[i][j][e] := Length of shortest path i -> j using 'e' edges
+        // kp[i][j][e] := Length of shortest path i -> j using 'e' edges
         for (var i = 0; i < n; ++i) {
             w[i] = new Array(n);
-            sp[i] = new Array(n);
+            kp[i] = new Array(n);
             for (var j = 0; j < n; ++j) {
                 w[i][j] = (args[i * n + j] >= MAX_WEIGHT ? Infinity : args[i * n + j]);
-                sp[i][j] = new Array(k + 1);
-                sp[i][j].fill(Infinity); // sp[i][j][0] = Infinity (i != j)
-                sp[i][j][1] = w[i][j]; // sp[i][j][1] = w[i][j]
+                kp[i][j] = new Array(k + 1);
+                kp[i][j].fill(Infinity); // kp[i][j][0] = Infinity (i != j)
+                kp[i][j][1] = w[i][j]; // kp[i][j][1] = w[i][j]
             }
-            sp[i][i][0] = 0; // sp[i][j][0] = 0 (i == j)
+            kp[i][i][0] = 0; // kp[i][j][0] = 0 (i == j)
         }
 
         for (var e = 2; e <= k; ++e) {
@@ -450,7 +451,7 @@ function shortestPath(args, res) {
                     for (var a = 0; a < n; ++a) {
                         // Shortest path i -> j using 'e' edges must be a shortest path from i -> a and a -> j
                         //if (a == i || a == j) continue; // Use intermediary edge
-                        sp[i][j][e] = Math.min(sp[i][j][e], w[i][a] + sp[a][j][e - 1]);
+                        kp[i][j][e] = Math.min(kp[i][j][e], w[i][a] + kp[a][j][e - 1]);
                     }
                 }
             }
@@ -460,12 +461,12 @@ function shortestPath(args, res) {
         var src = undefined;
         var dest = undefined;
 
-        var sp_len = Infinity;
+        var kp_len = Infinity;
 
         for (var i = 0; i < n; ++i) {
             for (var j = 0; j < n; ++j) {
-                if (sp_len > sp[i][j][k]) {
-                    sp_len = sp[i][j][k];
+                if (kp_len > kp[i][j][k]) {
+                    kp_len = kp[i][j][k];
                     src = i;
                     dest = j;
                 }
@@ -473,7 +474,7 @@ function shortestPath(args, res) {
         }
 
         // No path of lenght 'k' with weight less than 'W'
-        if (sp_len > W) {
+        if (kp_len > W) {
             res.write("", "binary");
             res.end();
             return;
@@ -481,22 +482,22 @@ function shortestPath(args, res) {
 
         // Path reconstruction
         var path = [src];
-        var len = sp_len;
+        var len = kp_len;
 
         if (state) {
             for (var e = k; e >= 2; --e) {
                 for (var a = 0; a < n; ++a) {
                     //if (a == src || a == dest) continue; // Use intermediary edge                       
-                    if (len == (w[src][a] + sp[a][dest][e - 1])) {
+                    if (len == (w[src][a] + kp[a][dest][e - 1])) {
                         path.push(a);
                         src = a;
-                        len = sp[a][dest][e - 1];
+                        len = kp[a][dest][e - 1];
                     }
                 }
             }
             path.push(dest);
         } else {
-            if (DEBUG) console.log('[Debug]', 'shortestPath:', 'Generating invalid result');
+            if (DEBUG) console.log('[Debug]', 'kPath:', 'Generating invalid result');
 
             if (Math.floor(Math.random() * 2) == 0) {
                 for (var i = 0; i < k; ++i) {
@@ -510,10 +511,91 @@ function shortestPath(args, res) {
             }
         }
 
-        if (DEBUG) console.log('[Debug]', 'shortestPath:', path, sp_len);
+        if (DEBUG) console.log('[Debug]', 'kPath:', path, kp_len);
 
         var pathBin = path.map(n => utils.intTo16BigEndianString(n));
         res.write(pathBin.reduce((acc, curr) => acc + curr), "binary");
+    }
+
+    res.end();
+}
+
+/**
+ * Computes dominating set of certain criteria in graph.
+ * The result is send to the client in (16-bit) big-endian binary form.
+ *
+ * @param {string} args max. size, and weight matrix ("k/n1/n2/...").
+ * @param {ServerResponse} res response.
+ * @returns {void} 
+ */
+function domSet() {
+    res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
+
+    args = args.split('/').map(arg => parseInt(arg));
+
+    var k = args.shift();
+
+    if (k <= 0) {
+        res.write("Error: Invalid input: Size must be positive", "binary");
+    }
+    else if (args.some(arg => isNaN(arg))) {
+        res.write("Error: Invalid input", "binary");
+    }
+    else if (!Number.isInteger(Math.sqrt(args.length))) {
+        res.write("Error: Invalid input: Not a square array", "binary");
+    }
+    else {
+        // Parse into (n x n) matrix 'w' (weights)
+        var w = new Array(n);
+        var n = Math.sqrt(args.length);
+
+        for (var i = 0; i < n; ++i) {
+            w[i] = new Array(n);
+            for (var j = 0; j < n; ++j) {
+                w[i][j] = (args[i * n + j] >= MAX_WEIGHT ? Infinity : args[i * n + j]);
+            }
+        }
+
+        var domSet = [];
+
+        var result, mask, total = Math.pow(2, input.length);
+        for (mask = 0; mask < total; mask++) { //O(2^n)
+            var dom = new Array(n);
+            dom.fill(false);
+            var set = [];
+            i = input.length - 1; //O(n)
+            do {
+                if ((mask & (1 << i)) !== 0) {
+                    set.push(input[i]);
+                }
+            } while (i--);
+
+            var set_len = set.length;
+
+            if (set_len > k) {
+                continue;
+            }
+            else {
+                for (var i = 0; i < set_len; ++i) {
+                    for (var i = 0; i < n; i++) {
+                        var elem = set[i];
+                        if (w[elem, i] < Infinity) {
+                            dom[i] = true;
+                        }
+                    }
+                }
+            }
+            if (dom.every(x => x == true) && set_len < domSet.length) {
+                domSet = set;
+            }
+        }
+
+        if (domSet.length > 0) {
+            var domSetBin = domSet.map(n => utils.intTo16BigEndianString(n));
+            res.write(domSetBin.reduce((acc, curr) => acc + curr), "binary");
+        } else {
+            res.write("", "binary");
+        }
     }
 
     res.end();
@@ -525,7 +607,7 @@ function shortestPath(args, res) {
  * @param {ServerRequest} req request.
  * @param {ServerResponse} res response.
  * @returns {void} 
-                                */
+ */
 function serveGetRequest(req, res) {
     var path = url.parse(req.url).path;
     var index = path.indexOf('/', 1);
@@ -534,25 +616,22 @@ function serveGetRequest(req, res) {
 
     switch (service) {
         case 'sort':
-            sortArrayPlain(args, res);
-            break;
-        case 'sortb':
-            sortArrayBin(args, res);
+            sortArray(args, res);
             break;
         case 'sqrt':
             sqrt(args, res);
             break;
         case 'min':
-            minBin(args, res);
+            minArray(args, res);
             break;
         case '3sum':
-            threeSumBin(args, res);
+            threeSum(args, res);
             break;
         case 'apsp':
             allPairsShortestPath(args, res);
             break;
-        case 'sp':
-            shortestPath(args, res);
+        case 'kp':
+            kPath(args, res);
             break;
         default:
             renderHTML(path, res);
@@ -566,7 +645,7 @@ function serveGetRequest(req, res) {
  * @param {ServerRequest} req request.
  * @param {ServerResponse} res response.
  * @returns {void} 
-                                */
+ */
 function servePostRequest(req, res) {
     var path = url.parse(req.url).path;
     var index = path.indexOf('/', 1);

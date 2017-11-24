@@ -8,9 +8,8 @@
 </head>
 
 <body>
-    <h1>Oraclize Solidity WebService</h1>
+    <h1>Oraclize Solidity Web Service</h1>
     <br>
-
     <div style="text-align:center">
         <form method="post">
             <input type="submit" value="STATE" id="state_button" class="button" />
@@ -18,30 +17,29 @@
         </form>
         <h2>@state</h2>
     </div>
-
     <br>
-
-    <h2>Array Sorting (Plain): /sort/n<sub>1</sub>/n<sub>2</sub>/...</h2>
-    <h4>&nbsp;&nbsp;&nbsp;Returns the sorted array as space-separated plaintext.</h4>
-    <br>
-    <h2>Array Sorting (Binary): /sortb/n<sub>1</sub>/n<sub>2</sub>/...</h2>
-    <h4>&nbsp;&nbsp;&nbsp;Returns the sorted array encoded as 16-bit big-endian (BE) integers.</h4>
-    <br>
-    <h2>Sqrt: /sqrt/n</h2>
-    <h4>&nbsp;&nbsp;&nbsp;Returns the integer square-root as plaintext.</h4>
-    <br>
-    <h2>Min: /min/n<sub>1</sub>/n<sub>2</sub>/...</h2>
-    <h4>&nbsp;&nbsp;&nbsp;Returns the mininum over an array of integers encoded as 16-bit integer.</h4>
-    <br>
-    <h2>3SUM: /3sum/n<sub>1</sub>/n<sub>2</sub>/...</h2>
-    <h4>&nbsp;&nbsp;&nbsp;Returns a triplet of indicies of elements summing to zero encoded as 48-bit string.</h4>
-    <br>
-    <h2>All-Pairs Shortest Path: /apsp/n<sub>1</sub>/n<sub>2</sub>/...</h2>
-    <h4>&nbsp;&nbsp;&nbsp;Returns the shortest path between each pair of vertices encoded as 16-bit integers.</h4>
-    <br>
-    <h2>Shortest Path: /sp/k/W/n<sub>1</sub>/n<sub>2</sub>/...</h2>
-    <h4>&nbsp;&nbsp;&nbsp;Returns a shortest path of length 'k' and weight &le; 'W' encoded as list of 16-bit integers.</h4>
-    <br>
+    <div class=api>
+        <h2>Array Sorting: /sortb/n<sub>1</sub>/n<sub>2</sub>/...</h2>
+        <h4>&nbsp;&nbsp;&nbsp;Returns the sorted array encoded as 16-bit big-endian (BE) integers.</h4>
+        <br>
+        <h2>Square Root: /sqrt/n</h2>
+        <h4>&nbsp;&nbsp;&nbsp;Returns the integer square-root as plaintext.</h4>
+        <br>
+        <h2>Array Min: /min/n<sub>1</sub>/n<sub>2</sub>/...</h2>
+        <h4>&nbsp;&nbsp;&nbsp;Returns the mininum over an array of integers encoded as 16-bit BE integer.</h4>
+        <br>
+        <h2>3SUM: /3sum/n<sub>1</sub>/n<sub>2</sub>/...</h2>
+        <h4>&nbsp;&nbsp;&nbsp;Returns a triplet of indices of elements summing to zero encoded as 48-bit string</h4>
+        <br>
+        <h2>All-Pairs Shortest Path: /apsp/n<sub>1</sub>/n<sub>2</sub>/...</h2>
+        <h4>&nbsp;&nbsp;&nbsp;Returns the shortest path lengths between each pair of vertices encoded as 16-bit BE integers.</h4>
+        <br>
+        <h2><i>k</i>-Path: /kp/k/W/n<sub>1</sub>/n<sub>2</sub>/...</h2>
+        <h4>&nbsp;&nbsp;&nbsp;Returns a path of length <i>k</i> and weight &le; <i>W</i> encoded as list of 16-bit BE integers.</h4>
+        <br>
+        <h2><i>k</i>-Dominating Set: /kds/k/W/n<sub>1</sub>/n<sub>2</sub>/...</h2>
+        <h4>&nbsp;&nbsp;&nbsp;Returns a dominating set of size &le; <i>k</i> encoded as list of 16-bit BE integers.</h4>
+        <br>        
+    </div>
 </body>
-
 </html>

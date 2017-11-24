@@ -9,7 +9,7 @@ function intTo32BigEndianString(n) {
     result += String.fromCharCode((n >> 16) & 0xFF);
     result += String.fromCharCode((n >> 8) & 0xFF);
     result += String.fromCharCode((n >> 0) & 0xFF);
-    
+
     return result;
 }
 
@@ -22,7 +22,7 @@ function intTo32BigEndianString(n) {
 function intTo16BigEndianString(n) {
     var result = String.fromCharCode((n >> 8) & 0xFF);
     result += String.fromCharCode((n >> 0) & 0xFF);
-    
+
     return result;
 }
 
