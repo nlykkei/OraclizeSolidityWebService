@@ -178,7 +178,7 @@ function minArray(args, res) {
         if (DEBUG) console.log('[Debug]', 'minArray:', 'min =', min);
         res.write(utils.intTo16BigEndianString(min), "binary");
     }
-    
+
     res.end();
 }
 
@@ -207,7 +207,7 @@ function threeSum(args, res) {
         var result = [];
 
         if (state) {
-            result = threeSum(S, sum);
+            result = _threeSum(S, sum);
         } else {
             if (DEBUG) console.log('[Debug]', 'threeSum:', 'Generating invalid result');
             result.push({
@@ -237,7 +237,7 @@ function threeSum(args, res) {
  * @param {int} sum target sum.
  * @returns {Object} object containing indicies.
  */
-function threeSum(S, sum) {
+function _threeSum(S, sum) {
     var result = [];
     var n = S.length;
     for (var i = 0; i <= n - 3; ++i) {
