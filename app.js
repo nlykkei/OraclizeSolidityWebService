@@ -73,31 +73,6 @@ function renderHTML(filePath, res) {
 
 /**
  * Sorts an array of integers.
- * The sorted array is send to the client in plain form "n1 n2...".
- *
- * @param {string} args integer array ("n1/n2/...").
- * @param {ServerResponse} res response.
- * @returns {void} 
- */
-function sortArrayPlain(args, res) {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-
-    args = args.split('/').map(arg => parseInt(arg));
-
-    if (args.some(arg => isNaN(arg))) {
-        res.write("Error: Invalid input");
-    } else {
-        args.sort((x, y) => x - y);
-        res.write(args.reduce(function (acc, curr) {
-            return acc + curr + " ";
-        }, "").trim());
-    }
-
-    res.end();
-}
-
-/**
- * Sorts an array of integers.
  * The sorted array is send to the client in (16-bit) big-endian binary form.
  *
  * @param {string} args integer array ("n1/n2/...").
@@ -110,13 +85,13 @@ function sortArray(args, res) {
     args = args.split('/').map(arg => parseInt(arg));
 
     if (args.some(arg => isNaN(arg))) {
-        res.write("Error: Invalid input", "binary");
+        res.write('Error: Invalid input', 'binary');
     } else {
         args.sort((x, y) => x - y);
         args = args.map(n => utils.intTo16BigEndianString(n));
         res.write(args.reduce(function (acc, curr) {
             return acc + curr;
-        }), "binary");
+        }), 'binary');
     }
 
     res.end();
@@ -142,7 +117,7 @@ function sqrt(arg, res) {
     }
 
     if (n.isNaN()) {
-        res.write("Error: Invalid input");
+        res.write('Error: Invalid input');
     } else {
         var _sqrt = n.sqrt().floor().toString(10);
         if (DEBUG) console.log('[Debug]', 'sqrt:', 'sqrt =', _sqrt);
@@ -166,17 +141,17 @@ function minArray(args, res) {
     args = args.split('/').map(arg => parseInt(arg));
 
     if (args.some(arg => isNaN(arg))) {
-        res.write("Error: Invalid input", "binary");
+        res.write('Error: Invalid input', 'binary');
     }
     else if (args.length == 0) {
-        res.write("", "binary");
+        res.write('', 'binary');
     } else {
         min = args[0];
         for (var i = 1; i < args.length; ++i) {
             if (args[i] < min) min = args[i];
         }
         if (DEBUG) console.log('[Debug]', 'minArray:', 'min =', min);
-        res.write(utils.intTo16BigEndianString(min), "binary");
+        res.write(utils.intTo16BigEndianString(min), 'binary');
     }
 
     res.end();
@@ -196,7 +171,7 @@ function threeSum(args, res) {
     args = args.split('/').map(arg => parseInt(arg));
 
     if (args.some(arg => isNaN(arg))) {
-        res.write("Error: Invalid input", "binary");
+        res.write('Error: Invalid input', 'binary');
     } else {
         var sum = args.shift();
         args = args.map((n, index) => { return { val: n, index: index } });
@@ -221,9 +196,9 @@ function threeSum(args, res) {
 
         if (result.length > 0) {
             res.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
-                + utils.intTo16BigEndianString(result[0].c.index & 0xFFFF), "binary");
+                + utils.intTo16BigEndianString(result[0].c.index & 0xFFFF), 'binary');
         } else {
-            res.write("", "binary");
+            res.write('', 'binary');
         }
     }
 
@@ -349,10 +324,10 @@ function allPairsShortestPath(args, res) {
     args = args.split('/').map(arg => parseInt(arg));
 
     if (args.some(arg => isNaN(arg))) {
-        res.write("Error: Invalid input", "binary");
+        res.write('Error: Invalid input', 'binary');
     }
     else if (!Number.isInteger(Math.sqrt(args.length))) {
-        res.write("Error: Invalid input: Not a square array", "binary");
+        res.write('Error: Invalid input: Not a square array', 'binary');
     }
     else {
         // Parse into (n x n) matrix 'w' (weights)
@@ -383,9 +358,9 @@ function allPairsShortestPath(args, res) {
 
         //var nextBin = next.map(n => utils.intTo16BigEndianString(n));
         //res.write(nextBin.reduce((acc, curr) => acc + curr,
-        //    distBin.reduce((acc, curr) => acc + curr)), "binary");
+        //    distBin.reduce((acc, curr) => acc + curr)), 'binary');
 
-        res.write(distBin.reduce((acc, curr) => acc + curr), "binary");
+        res.write(distBin.reduce((acc, curr) => acc + curr), 'binary');
     }
 
     res.end();
@@ -405,26 +380,26 @@ function kPath(args, res) {
     args = args.split('/').map(arg => parseInt(arg));
 
     if (args.some(arg => isNaN(arg))) {
-        res.write("Error: Invalid input", "binary");
+        res.write('Error: Invalid input', 'binary');
     }
 
     var k = args.shift();
     var W = args.shift();
 
     if (k <= 0) {
-        res.write("Error: Invalid input: Length must be positive", "binary");
+        res.write('Error: Invalid input: Length must be positive', 'binary');
         res.end();
         return;
     }
 
     if (W < 0) {
-        res.write("Error: Invalid input: Weight must be non-negative", "binary");
+        res.write('Error: Invalid input: Weight must be non-negative', 'binary');
         res.end();
         return;
     }
 
     if (!Number.isInteger(Math.sqrt(args.length))) {
-        res.write("Error: Invalid input: Not a square array", "binary");
+        res.write('Error: Invalid input: Not a square array', 'binary');
     }
     else {
         var n = Math.sqrt(args.length);
@@ -475,7 +450,7 @@ function kPath(args, res) {
 
         // No path of lenght 'k' with weight less than 'W'
         if (kp_len > W) {
-            res.write("", "binary");
+            res.write('', 'binary');
             res.end();
             return;
         }
@@ -514,21 +489,21 @@ function kPath(args, res) {
         if (DEBUG) console.log('[Debug]', 'kPath:', path, kp_len);
 
         var pathBin = path.map(n => utils.intTo16BigEndianString(n));
-        res.write(pathBin.reduce((acc, curr) => acc + curr), "binary");
+        res.write(pathBin.reduce((acc, curr) => acc + curr), 'binary');
     }
 
     res.end();
 }
 
 /**
- * Computes dominating set of certain criteria in graph.
+ * Computes (smallest) dominating set of certain criteria in graph.
  * The result is send to the client in (16-bit) big-endian binary form.
  *
- * @param {string} args max. size, and weight matrix ("k/n1/n2/...").
+ * @param {string} args max. size, and adjacency matrix ("k/n1/n2/...").
  * @param {ServerResponse} res response.
  * @returns {void} 
  */
-function domSet() {
+function kDomSet() {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     args = args.split('/').map(arg => parseInt(arg));
@@ -536,65 +511,73 @@ function domSet() {
     var k = args.shift();
 
     if (k <= 0) {
-        res.write("Error: Invalid input: Size must be positive", "binary");
+        res.write('Error: Invalid input: Size must be positive', 'binary');
     }
     else if (args.some(arg => isNaN(arg))) {
-        res.write("Error: Invalid input", "binary");
+        res.write('Error: Invalid input', 'binary');
     }
     else if (!Number.isInteger(Math.sqrt(args.length))) {
-        res.write("Error: Invalid input: Not a square array", "binary");
+        res.write('Error: Invalid input: Not a square array', 'binary');
     }
     else {
-        // Parse into (n x n) matrix 'w' (weights)
-        var w = new Array(n);
+        // Parse into (n x n) adjacency matrix 'm'
+        var m = new Array(n);
         var n = Math.sqrt(args.length);
 
         for (var i = 0; i < n; ++i) {
-            w[i] = new Array(n);
+            m[i] = new Array(n);
             for (var j = 0; j < n; ++j) {
-                w[i][j] = (args[i * n + j] >= MAX_WEIGHT ? Infinity : args[i * n + j]);
+                m[i][j] = args[i * n + j];
             }
         }
 
         var domSet = [];
 
-        var result, mask, total = Math.pow(2, input.length);
-        for (mask = 0; mask < total; mask++) { //O(2^n)
-            var dom = new Array(n);
-            dom.fill(false);
+        // Generate all vertex combinations
+        var result, mask, total = Math.pow(2, n);
+        for (mask = 0; mask < total; mask++) { // O(2^n)
+            var dominated = new Array(n);
+            dominated.fill(false);
             var set = [];
-            i = input.length - 1; //O(n)
+
+            i = n - 1; // O(n)
             do {
                 if ((mask & (1 << i)) !== 0) {
                     set.push(input[i]);
                 }
             } while (i--);
 
-            var set_len = set.length;
+            const set_len = set.length;
 
             if (set_len > k) {
+                // Set too large
                 continue;
             }
-            else {
-                for (var i = 0; i < set_len; ++i) {
-                    for (var i = 0; i < n; i++) {
-                        var elem = set[i];
-                        if (w[elem, i] < Infinity) {
-                            dom[i] = true;
+            else { 
+                // Check dominating set
+                for (var v = 0; v < len; ++v) {
+                    dominated[set[v]] = true;
+                    for (var u = 0; u < n; u++) {
+                        if (m[set[v], u] != 0) {
+                            dominated[u] = true;
                         }
                     }
                 }
             }
-            if (dom.every(x => x == true) && set_len < domSet.length) {
-                domSet = set;
+            if (dom.every(x => x == true)) { 
+                // Found dominating set
+                if (DEBUG) console.log('[Debug]', 'kDomSet:', set, set_len);
+                if (set_len < domSet.length) {
+                    domSet = set;
+                }
             }
         }
 
-        if (domSet.length > 0) {
+        if (domSet.length > 0 && domSet.length <= k) {
             var domSetBin = domSet.map(n => utils.intTo16BigEndianString(n));
-            res.write(domSetBin.reduce((acc, curr) => acc + curr), "binary");
+            res.write(domSetBin.reduce((acc, curr) => acc + curr), 'binary');
         } else {
-            res.write("", "binary");
+            res.write('', 'binary');
         }
     }
 
@@ -632,6 +615,9 @@ function serveGetRequest(req, res) {
             break;
         case 'kp':
             kPath(args, res);
+            break;
+        case 'kds':
+            kDomSet(args, res);
             break;
         default:
             renderHTML(path, res);

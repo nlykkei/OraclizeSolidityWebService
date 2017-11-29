@@ -6,7 +6,7 @@ var app = require('./app');
 const PORT = process.env.PORT || 8080;
 
 var server = http.createServer(app.handleRequest).listen(PORT, () => {
-    console.log("Server listening on port: %s", PORT);
+    console.log('Server listening on port: %s', PORT);
 });
 
 
