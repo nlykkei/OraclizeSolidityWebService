@@ -489,13 +489,13 @@ function kPath(args, res) {
 
             if (Math.floor(Math.random() * 2) == 0) {
                 for (var i = 0; i < k; ++i) {
-                    path.push(Math.floor((Math.random() * n)));
+                    path.push(Math.floor(Math.random() * n));
                 }
             }
             else {
                 var random_len = Math.floor(Math.random() * 2 * k) + 1;
                 for (var i = 0; i < random_len; ++i) {
-                    path.push(Math.floor((Math.random() * n)));
+                    path.push(Math.floor(Math.random() * n));
                 }
             }
         }
@@ -602,17 +602,17 @@ function kDomSet(args, res) {
         else {
             if (DEBUG) console.log('[Debug]', 'kDomSet:', 'Generating invalid result');
 
-            domSet = []
+            var domSet = []
 
             if (Math.floor(Math.random() * 2) == 0) {
                 for (var i = 0; i < k; ++i) {
-                    domSet.push(Math.floor((Math.random() * n)));
+                    domSet.push(Math.floor(Math.random() * n));
                 }
             }
             else {
                 var random_len = Math.floor(Math.random() * 2 * k) + 1;
                 for (var i = 0; i < random_len; ++i) {
-                    domSet.push(Math.floor((Math.random() * n)));
+                    domSet.push(Math.floor(Math.random() * n));
                 }
             }
 
