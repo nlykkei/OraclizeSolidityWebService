@@ -56,11 +56,13 @@ function renderHTML(filePath, res) {
                     </div>
                 </body>
                 </html>`);
-        } else {
+        }
+        else {
             res.writeHead(200, { 'Content-Type': contentType });
             if (filePath == '/style.css') {
                 data = data.replace(/@bgcolor/g, state ? 'palegreen' : 'tomato');
-            } else if (filePath == '/index.html') {
+            }
+            else if (filePath == '/index.html') {
                 data = data.replace(/@state/g, state ? 'Valid results' : 'Invalid results')
             }
 
@@ -86,7 +88,8 @@ function sortArray(args, res) {
 
     if (args.some(arg => isNaN(arg))) {
         res.write('Error: Invalid input', 'binary');
-    } else {
+    }
+    else {
         args.sort((x, y) => x - y);
         args = args.map(n => utils.intTo16BigEndianString(n));
         res.write(args.reduce(function (acc, curr) {
@@ -111,14 +114,16 @@ function sqrt(arg, res) {
 
     if (state) {
         n = new BigNumber(arg);
-    } else {
+    }
+    else {
         if (DEBUG) console.log('[Debug]', 'sqrt:', 'Generating invalid result');
         n = new BigNumber(Math.floor((Math.random() * 100)));
     }
 
     if (n.isNaN()) {
         res.write('Error: Invalid input');
-    } else {
+    }
+    else {
         var _sqrt = n.sqrt().floor().toString(10);
         if (DEBUG) console.log('[Debug]', 'sqrt:', 'sqrt =', _sqrt);
         res.write(_sqrt);
@@ -145,7 +150,8 @@ function minArray(args, res) {
     }
     else if (args.length == 0) {
         res.write('', 'binary');
-    } else {
+    }
+    else {
         min = args[0];
         for (var i = 1; i < args.length; ++i) {
             if (args[i] < min) min = args[i];
@@ -172,7 +178,8 @@ function threeSum(args, res) {
 
     if (args.some(arg => isNaN(arg))) {
         res.write('Error: Invalid input', 'binary');
-    } else {
+    }
+    else {
         var sum = args.shift();
         args = args.map((n, index) => { return { val: n, index: index } });
         var S = args.sort((x, y) => x.val - y.val);
@@ -183,7 +190,8 @@ function threeSum(args, res) {
 
         if (state) {
             result = _threeSum(S, sum);
-        } else {
+        }
+        else {
             if (DEBUG) console.log('[Debug]', 'threeSum:', 'Generating invalid result');
             result.push({
                 a: { val: 0, index: Math.floor(Math.random() * S.length) },
@@ -197,7 +205,8 @@ function threeSum(args, res) {
         if (result.length > 0) {
             res.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
                 + utils.intTo16BigEndianString(result[0].c.index & 0xFFFF), 'binary');
-        } else {
+        }
+        else {
             res.write('', 'binary');
         }
     }
@@ -226,12 +235,15 @@ function _threeSum(S, sum) {
                 result.push({ a: a, b: b, c: c });
                 if (b.val == S[start + 1].val) { // Search for all combinations that sum to target sum
                     start = start + 1;
-                } else {
+                }
+                else {
                     end = end - 1;
                 }
-            } else if (a.val + b.val + c.val > sum) {
+            }
+            else if (a.val + b.val + c.val > sum) {
                 end = end - 1;
-            } else {
+            }
+            else {
                 start = start + 1;
             }
         }
@@ -471,15 +483,17 @@ function kPath(args, res) {
                 }
             }
             path.push(dest);
-        } else {
+        }
+        else {
             if (DEBUG) console.log('[Debug]', 'kPath:', 'Generating invalid result');
 
             if (Math.floor(Math.random() * 2) == 0) {
                 for (var i = 0; i < k; ++i) {
                     path.push(Math.floor((Math.random() * n)));
                 }
-            } else {
-                var random_len = Math.floor(Math.random() * 10); // Random path
+            }
+            else {
+                var random_len = Math.floor(Math.random() * 2 * k) + 1;
                 for (var i = 0; i < random_len; ++i) {
                     path.push(Math.floor((Math.random() * n)));
                 }
@@ -520,67 +534,95 @@ function kDomSet(args, res) {
         res.write('Error: Invalid input: Not a square array', 'binary');
     }
     else {
-        // Parse into (n x n) adjacency matrix 'm'
-        var m = new Array(n);
-        var n = Math.sqrt(args.length);
+        if (state) {
+            // Parse into (n x n) adjacency matrix 'm'
+            var m = new Array(n);
+            var n = Math.sqrt(args.length);
 
-        for (var i = 0; i < n; ++i) {
-            m[i] = new Array(n);
-            for (var j = 0; j < n; ++j) {
-                m[i][j] = args[i * n + j];
-            }
-        }
-
-        if (DEBUG) console.log('[Debug]', 'kDomSet:', 'k =',  k);
-        if (DEBUG) console.log('[Debug]', 'kDomSet:', 'm =', m);
-
-        var domSet = [];
-
-        // Generate all vertex combinations
-        var mask, total = Math.pow(2, n);
-        for (mask = 1; mask < total; mask++) { // O(2^n)
-            var dominated = new Array(n);
-            dominated.fill(false);
-            var set = [];
-
-            i = n - 1; // O(n)
-            do {
-                if ((mask & (1 << i)) !== 0) { // 001, 010, 011, 100, 101, 110, 111
-                    set.push(i);
+            for (var i = 0; i < n; ++i) {
+                m[i] = new Array(n);
+                for (var j = 0; j < n; ++j) {
+                    m[i][j] = args[i * n + j];
                 }
-            } while (i--);
-
-            if (set.length > k) {
-                // Set too large
-                continue;
             }
-            else { 
-                // Dominated vertices
-                for (var v = 0; v < set.length; ++v) {
-                    dominated[set[v]] = true;
-                    for (var u = 0; u < n; u++) {
-                        if (m[set[v]][u] != 0) {
-                            dominated[u] = true;
+
+            if (DEBUG) console.log('[Debug]', 'kDomSet:', 'k =', k);
+            if (DEBUG) console.log('[Debug]', 'kDomSet:', 'm =', m);
+
+            var domSet = [];
+
+            // Generate all vertex combinations
+            var mask, total = Math.pow(2, n);
+            for (mask = 1; mask < total; mask++) { // O(2^n)
+                var dominated = new Array(n);
+                dominated.fill(false);
+                var set = [];
+
+                i = n - 1; // O(n)
+                do {
+                    if ((mask & (1 << i)) !== 0) { // 001, 010, 011, 100, 101, 110, 111
+                        set.push(i);
+                    }
+                } while (i--);
+
+                if (set.length > k) {
+                    // Set too large
+                    continue;
+                }
+                else {
+                    // Dominated vertices
+                    for (var v = 0; v < set.length; ++v) {
+                        dominated[set[v]] = true;
+                        for (var u = 0; u < n; u++) {
+                            if (m[set[v]][u] != 0) {
+                                dominated[u] = true;
+                            }
                         }
+                    }
+                }
+
+                if (dominated.every(x => x == true)) { // Check dominating set 
+                    if (DEBUG) console.log('[Debug]', 'kDomSet:', 'Found', set, set.length);
+                    if (domSet.length == 0 || set.length < domSet.length) {
+                        domSet = set;
                     }
                 }
             }
 
-            if (dominated.every(x => x == true)) { // Check dominating set 
-                if (DEBUG) console.log('[Debug]', 'kDomSet:', 'Found',  set, set.length);
-                if (domSet.length == 0 || set.length < domSet.length) {
-                    domSet = set;
-                }
+            if (domSet.length > 0 && domSet.length <= k) {
+                if (DEBUG) console.log('[Debug]', 'kDomSet:', 'Minimal', domSet, domSet.length);
+                var domSetBin = domSet.map(n => utils.intTo16BigEndianString(n));
+                res.write(domSetBin.reduce((acc, curr) => acc + curr), 'binary');
+            }
+            else {
+                if (DEBUG) console.log('[Debug]', 'kDomSet:', 'No dominating set');
+                res.write('', 'binary');
             }
         }
+        else {
+            if (DEBUG) console.log('[Debug]', 'kDomSet:', 'Generating invalid result');
 
-        if (domSet.length > 0 && domSet.length <= k) {
+            domSet = []
+
+            if (Math.floor(Math.random() * 2) == 0) {
+                for (var i = 0; i < k; ++i) {
+                    domSet.push(Math.floor((Math.random() * n)));
+                }
+            }
+            else {
+                var random_len = Math.floor(Math.random() * 2 * k) + 1;
+                for (var i = 0; i < random_len; ++i) {
+                    domSet.push(Math.floor((Math.random() * n)));
+                }
+            }
+
+            domSet = domSet.filter(function (item, pos, self) {
+                return self.indexOf(item) == pos;
+            });
+
             if (DEBUG) console.log('[Debug]', 'kDomSet:', 'Minimal', domSet, domSet.length);
             var domSetBin = domSet.map(n => utils.intTo16BigEndianString(n));
             res.write(domSetBin.reduce((acc, curr) => acc + curr), 'binary');
-        } else {
-            if (DEBUG) console.log('[Debug]', 'kDomSet:', 'No dominating set');
-            res.write('', 'binary');
         }
     }
 
@@ -661,7 +703,8 @@ function servePostRequest(req, res) {
         if (query.state == 'flip') {
             state = !state;
             renderHTML('/', res); // index.html
-        } else {
+        }
+        else {
             res.writeHead(400, { 'Content-Type': 'text/html' });
             res.write(`
             <!DOCTYPE html>
