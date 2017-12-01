@@ -534,10 +534,11 @@ function kDomSet(args, res) {
         res.write('Error: Invalid input: Not a square array', 'binary');
     }
     else {
+        var n = Math.sqrt(args.length);
+
         if (state) {
             // Parse into (n x n) adjacency matrix 'm'
             var m = new Array(n);
-            var n = Math.sqrt(args.length);
 
             for (var i = 0; i < n; ++i) {
                 m[i] = new Array(n);
@@ -616,9 +617,9 @@ function kDomSet(args, res) {
                 }
             }
 
-            //domSet = domSet.filter(function (item, pos, self) {
-            //    return self.indexOf(item) == pos;
-            //});
+            domSet = domSet.filter(function (item, pos, self) {
+                return self.indexOf(item) == pos;
+            });
 
             if (DEBUG) console.log('[Debug]', 'kDomSet:', 'Minimal', domSet, domSet.length);
             var domSetBin = domSet.map(n => utils.intTo16BigEndianString(n));
