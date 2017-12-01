@@ -503,7 +503,7 @@ function kPath(args, res) {
  * @param {ServerResponse} res response.
  * @returns {void} 
  */
-function kDomSet() {
+function kDomSet(args, res) {
     res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
 
     args = args.split('/').map(arg => parseInt(arg));
@@ -531,52 +531,55 @@ function kDomSet() {
             }
         }
 
+        if (DEBUG) console.log('[Debug]', 'kDomSet:', 'k =',  k);
+        if (DEBUG) console.log('[Debug]', 'kDomSet:', 'm =', m);
+
         var domSet = [];
 
         // Generate all vertex combinations
-        var result, mask, total = Math.pow(2, n);
-        for (mask = 0; mask < total; mask++) { // O(2^n)
+        var mask, total = Math.pow(2, n);
+        for (mask = 1; mask < total; mask++) { // O(2^n)
             var dominated = new Array(n);
             dominated.fill(false);
             var set = [];
 
             i = n - 1; // O(n)
             do {
-                if ((mask & (1 << i)) !== 0) {
-                    set.push(input[i]);
+                if ((mask & (1 << i)) !== 0) { // 001, 010, 011, 100, 101, 110, 111
+                    set.push(i);
                 }
             } while (i--);
 
-            const set_len = set.length;
-
-            if (set_len > k) {
+            if (set.length > k) {
                 // Set too large
                 continue;
             }
             else { 
-                // Check dominating set
-                for (var v = 0; v < len; ++v) {
+                // Dominated vertices
+                for (var v = 0; v < set.length; ++v) {
                     dominated[set[v]] = true;
                     for (var u = 0; u < n; u++) {
-                        if (m[set[v], u] != 0) {
+                        if (m[set[v]][u] != 0) {
                             dominated[u] = true;
                         }
                     }
                 }
             }
-            if (dom.every(x => x == true)) { 
-                // Found dominating set
-                if (DEBUG) console.log('[Debug]', 'kDomSet:', set, set_len);
-                if (set_len < domSet.length) {
+
+            if (dominated.every(x => x == true)) { // Check dominating set 
+                if (DEBUG) console.log('[Debug]', 'kDomSet:', 'Found',  set, set.length);
+                if (domSet.length == 0 || set.length < domSet.length) {
                     domSet = set;
                 }
             }
         }
 
         if (domSet.length > 0 && domSet.length <= k) {
+            if (DEBUG) console.log('[Debug]', 'kDomSet:', 'Minimal', domSet, domSet.length);
             var domSetBin = domSet.map(n => utils.intTo16BigEndianString(n));
             res.write(domSetBin.reduce((acc, curr) => acc + curr), 'binary');
         } else {
+            if (DEBUG) console.log('[Debug]', 'kDomSet:', 'No dominating set');
             res.write('', 'binary');
         }
     }
