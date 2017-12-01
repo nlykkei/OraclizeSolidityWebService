@@ -495,7 +495,7 @@ function kPath(args, res) {
                 }
             }
             else {
-                var random_len = Math.floor(Math.random() * 2 * k) + 1;
+                var random_len = Math.floor(Math.random() * 2 * k);
                 for (var i = 0; i < random_len; ++i) {
                     path.push(Math.floor(Math.random() * n));
                 }
