@@ -619,9 +619,9 @@ function kDomSet(args, res) {
                 }
             }
 
-            domSet = domSet.filter(function (item, pos, self) {
-                return self.indexOf(item) == pos;
-            });
+            //domSet = domSet.filter(function (item, pos, self) {
+            //    return self.indexOf(item) == pos;
+            //});
 
             if (DEBUG) console.log('[Debug]', 'kDomSet:', 'Minimal', domSet, domSet.length);
             var domSetBin = domSet.map(n => utils.intTo16BigEndianString(n));
