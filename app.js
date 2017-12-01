@@ -613,7 +613,7 @@ function kDomSet(args, res) {
                 }
             }
             else {
-                var random_len = Math.max(k + 1, Math.floor(Math.random() * 2 * k));
+                var random_len = Math.max(k + 1, Math.floor(Math.random() * 2 * k) + 1);
                 for (var i = 0; i < random_len; ++i) {
                     domSet.push(Math.floor(Math.random() * n));
                 }
