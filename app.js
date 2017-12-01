@@ -483,6 +483,8 @@ function kPath(args, res) {
                 }
             }
             path.push(dest);
+
+            if (DEBUG) console.log('[Debug]', 'kPath:', path, kp_len);
         }
         else {
             if (DEBUG) console.log('[Debug]', 'kPath:', 'Generating invalid result');
@@ -498,9 +500,9 @@ function kPath(args, res) {
                     path.push(Math.floor(Math.random() * n));
                 }
             }
-        }
 
-        if (DEBUG) console.log('[Debug]', 'kPath:', path, kp_len);
+            if (DEBUG) console.log('[Debug]', 'kPath:', path);
+        }
 
         var pathBin = path.map(n => utils.intTo16BigEndianString(n));
         res.write(pathBin.reduce((acc, curr) => acc + curr), 'binary');
