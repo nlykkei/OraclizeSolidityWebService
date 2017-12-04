@@ -184,7 +184,7 @@ function threeSum(args, res) {
         args = args.map((n, index) => { return { val: n, index: index } });
         var S = args.sort((x, y) => x.val - y.val);
 
-        if (DEBUG) console.log('[Debug]', 'treeSumBin:', 'sum =', sum, 'S =', S);
+        //if (DEBUG) console.log('[Debug]', 'treeSumBin:', 'sum =', sum, 'S =', S);
 
         var result = [];
 
@@ -200,7 +200,7 @@ function threeSum(args, res) {
             });
         }
 
-        if (DEBUG) console.log('[Debug]', 'threeSum:', 'result =', result);
+        if (DEBUG) console.log('[Debug]', 'threeSum:', 'result =', result.length > 0 ? result[0] : '');
 
         if (result.length > 0) {
             res.write(utils.intTo32BigEndianString(((result[0].a.index & 0xFFFF) << 16) + (result[0].b.index & 0xFFFF))
