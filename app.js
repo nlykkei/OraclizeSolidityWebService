@@ -102,7 +102,7 @@ function sortArray(args, res) {
 
 /**
  * Computes integral square root of an integer.
- * The result is send to the client in plain form "n".
+ * The result is send to the client as ASCII.
  *
  * @param {string} args integer ("n").
  * @param {ServerResponse} res response.
@@ -633,6 +633,19 @@ function kDomSet(args, res) {
 }
 
 /**
+ * Sends echo response.
+ *
+ * @param {string} args value.
+ * @param {ServerResponse} res response.
+ * @returns {void} 
+ */
+function echo(args, res) {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.write(args);
+    res.end();
+}
+
+/**
  * Serves GET-requests.
  *
  * @param {ServerRequest} req request.
@@ -646,6 +659,9 @@ function serveGetRequest(req, res) {
     var args = path.substring(index + 1);
 
     switch (service) {
+        case 'echo':
+            echo(args, res);
+            break;
         case 'sort':
             sortArray(args, res);
             break;
